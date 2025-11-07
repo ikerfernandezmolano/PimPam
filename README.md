@@ -1,6 +1,6 @@
-## PIMPAM
+# PIMPAM
 
-# Integrantes
+## Integrantes
 Iker Fernández 
 Paula Tapias 
 María Fernández
