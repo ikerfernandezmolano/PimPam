@@ -10,11 +10,14 @@
     <orderEntry type="jdk" jdkName="Python 3.12 (ADSI_2526_pokedex)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+  <component name="PackageRequirementsSettings">
+    <option name="removeUnused" value="true" />
+  </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/app/view" />
+        <option value="$MODULE_DIR$/app/templates" />
       </list>
     </option>
   </component>

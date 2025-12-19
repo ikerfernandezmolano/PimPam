@@ -6,4 +6,4 @@ app = create_app()
 
 
 if __name__ == '__main__':
-    app.run()   # para no tener que reiniciar el servidor al hacer pruebas añadir parámetro--> debug=True
+    app.run(debug=True)   # para no tener que reiniciar el servidor al hacer pruebas añadir parámetro--> debug=True

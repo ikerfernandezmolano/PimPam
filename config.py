@@ -1,8 +1,8 @@
 import os
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class Config:
-    DB_PATH = os.path.join(BASE_DIR, "library.db")
+    DB_PATH = os.path.join(BASE_DIR, "library.sqlite")
     SECRET_KEY = "supersecretkey"

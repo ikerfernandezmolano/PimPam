@@ -11,9 +11,11 @@ from config import Config
 
 
 def init_db():
-    if not os.path.exists(Config.DB_PATH):
+    print("Iniciando la base de datos")
+    if os.path.exists(Config.DB_PATH):
+        print("La base de datos existe")
         conn = sqlite3.connect(Config.DB_PATH)
-        with open('app.database/schema.sql') as f:
+        with open('app/database/schema.sql') as f:
             conn.executescript(f.read())
         conn.close()
 
