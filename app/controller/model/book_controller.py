@@ -28,9 +28,6 @@ class BookController:
                         ORDER BY books.title ASC"""
         )
 
-        if not rows:
-            raise ValueError("No hay libros disponibles")
-
         return [ dict(row) for row in rows ]
 
     def get_stock(self, book_id):
