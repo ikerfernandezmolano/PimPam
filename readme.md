@@ -1,3 +1,8 @@
+# PIMPAM
+
+## Integrantes
+Iker Fernández, Paula Tapias, María Fernández, Aitzol Rivera y Mbarek Galloul
+
 # Biblioteca MVC con Flask y SQLite
 
 Un pequeño ejemplo sobre como aplicar el patrón MVC taly como se ha visto en clase. 
