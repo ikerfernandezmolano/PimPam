@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Equipos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='equipos.css') }}">
+</head>
+
+<body class="background">
+
+<header class="top-bar">
+    <div class="header-left">
+        <span class="back">←</span>
+        <span class="header-title">EQUIPOS</span>
+    </div>
+
+    <nav class="menu">
+        <a href="#" class="menu-item">
+            <img src="{{ url_for('static', filename='eevee.png') }}" class="icon">
+            <span>MI CUENTA</span>
+        </a>
+        <a href="#" class="menu-item">
+            <img src="{{ url_for('static', filename='pikachu.png') }}" class="icon">
+            <span>MIS AMIGOS</span>
+        </a>
+        <a href="#" class="menu-item active">
+            <img src="{{ url_for('static', filename='snorlax.png') }}" class="icon">
+            <span>EQUIPOS</span>
+        </a>
+    </nav>
+</header>
+
+<div class="container">
+
+{% for equipo in equipos %}
+<div class="team-block">
+
+    <div class="team-header">
+        <form method="post"
+              action="{{ url_for('equipos.modificar_nombre_equipo', idEquipo=equipo.IDEquipo) }}">
+            <input type="text"
+                   name="nombre"
+                   value="{{ equipo.Nombre }}"
+                   class="team-name-input"
+                   onchange="this.form.submit()">
+        </form>
+    </div>
+
+    <div class="team-row">
+    {% for i in range(6) %}
+        {% set poke = equipo.pokemon | selectattr("Slot", "equalto", i) | list %}
+
+        <form method="post"
+              action="{{ url_for('equipos.modificar_pokemon', idEquipo=equipo.IDEquipo) }}"
+              class="slot-form">
+
+            <input type="hidden" name="slot" value="{{ i }}">
+
+            <label class="slot-click">
+                {% if poke %}
+                    <img src="{{ poke[0].Sprite }}" class="pokemon">
+                {% else %}
+                    <div class="slot">+</div>
+                {% endif %}
+
+                <select name="idPokemon" onchange="this.form.submit()">
+                    <option value="">Vacío</option>
+                    {% for p in pokedex %}
+                        <option value="{{ p.IDPokemon }}">
+                            {{ p.Nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+        </form>
+    {% endfor %}
+    </div>
+
+    <div class="team-actions">
+        <form method="post"
+              action="{{ url_for('equipos.eliminar_equipo', idEquipo=equipo.IDEquipo) }}">
+            <button class="delete">ELIMINAR</button>
+        </form>
+    </div>
+
+</div>
+{% endfor %}
+
+<div class="teams-list">
+    {% for equipo in equipos %}
+        <div class="ball">
+            <img src="{{ url_for('static', filename='pokeball.png') }}" class="ball-img">
+            <span>{{ equipo.Nombre }}</span>
+        </div>
+    {% endfor %}
+
+    <form method="post" action="{{ url_for('equipos.crear_equipo') }}">
+        <input type="hidden" name="nombre" value="Equipo {{ equipos|length + 1 }}">
+        <button type="submit" class="ball new">
+            <img src="{{ url_for('static', filename='pokeball.png') }}" class="ball-img">
+            <div class="plus">+</div>
+            <span>NUEVO<br>EQUIPO</span>
+        </button>
+    </form>
+</div>
+
+<div class="red-line"></div>
+
+</div>
+
+</body>
+</html>
