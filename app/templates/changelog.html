@@ -10,7 +10,7 @@
 <body>
 
 <div class="top-bar">
-    <a href="#" class="back-arrow">
+    <a href="{{ url_for('pokedex.index') }}" class="back-arrow">
         <img src="https://img.icons8.com/ios-filled/50/000000/left.png" alt="Volver">
     </a>
     
@@ -31,6 +31,19 @@
         </a>
     </div>
 </div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flash-container">
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">
+                    {{ message }}
+                    <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
 
 <div class="card-container">
     <div class="changelog-header">
@@ -113,13 +126,10 @@
 
 <script>
     function abrirPopup(usuario, fecha, texto, sprite) {
-        // 1. Poner los datos en la tarjeta
         document.getElementById('popupUser').innerText = '@' + usuario;
         document.getElementById('popupDate').innerText = fecha;
-        document.getElementById('popupDesc').innerText = texto.toUpperCase(); // Ponemos el texto en mayúsculas como en el diseño
+        document.getElementById('popupDesc').innerText = texto.toUpperCase();
         document.getElementById('popupImage').src = sprite;
-        
-        // 2. Mostrar la ventana
         document.getElementById('modalOverlay').style.display = 'flex';
     }
 
