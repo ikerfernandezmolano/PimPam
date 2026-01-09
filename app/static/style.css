@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 body.background {
     background-image: url("/static/fondo.png");
     background-size: cover;
@@ -33,7 +32,7 @@ body.background {
     background: none;
     cursor: pointer;
 }
-=======
+
 /* =========================
    Estilos generales
    ========================= */
@@ -159,4 +158,3 @@ table th {
     background-color: #f8d7da;
     color: #721c24;
 }
->>>>>>> master

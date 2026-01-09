@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pokedex - PimPam</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='equipos.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='pokedex.css') }}">
+</head>
+<body class="background">
+
+    <div class="top-bar">
+        <div class="header-left"></div>
+        <div class="menu">
+            <a href="#" class="menu-item">
+                <img src="{{ url_for('static', filename='snorlax.png') }}">
+                <span>MI CUENTA</span>
+            </a>
+            <a href="#" class="menu-item">
+                <img src="{{ url_for('static', filename='pikachu.png') }}">
+                <span>MIS AMIGOS</span>
+            </a>
+            <a href="/equipos" class="menu-item">
+                <img src="{{ url_for('static', filename='eevee.png') }}">
+                <span>EQUIPOS</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="pokedex-main-container">
+        <div class="pokedex-left-panel">
+            <img src="{{ url_for('static', filename=destacado.imagen) }}" alt="Pokemon">
+            <h1>{{ destacado.nombre }} #{{ destacado.id }}</h1>
+            <p style="color: #5d81e8; font-weight: bold; font-size: 1.2rem;">
+                {{ destacado.tipo1 }} {% if destacado.tipo2 %}- {{ destacado.tipo2 }}{% endif %}
+            </p>
+            <p class="description">{{ destacado.description }}</p>
+            
+            <div class="stats-mini">
+                <p><strong>ALTURA:</strong> {{ destacado.altura }} | <strong>PESO:</strong> {{ destacado.peso }}</p>
+                <p><strong>CATEGORÍA:</strong> {{ destacado.categoria }}</p>
+            </div>
+
+            <button class="btn-ataques">ATAQUES</button>
+        </div>
+
+        <div class="pokedex-right-panel">
+            <div class="pokemon-grid">
+                {% for p in pokemons %}
+                <div class="pokemon-item-card">
+                    <img src="{{ url_for('static', filename=p.imagen) }}" alt="{{ p.nombre }}">
+                    <div>
+                        <h3 style="margin: 0; font-size: 16px;">{{ p.nombre }}</h3>
+                        <span style="color: #999;">#{{ p.id }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

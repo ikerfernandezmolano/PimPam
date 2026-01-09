@@ -6,6 +6,8 @@ from flask import Flask
 from app.controller.ui.equipos_controller import equipos_blueprint
 from app.controller.ui.pokemon_controller import pokemon_blueprint
 
+from app.controller.ui.pokedex_controller import pokedex_blueprint
+
 from app.database.connection import Connection
 from app.config import Config
 from app.controller.ui.book_controller import book_blueprint
@@ -49,5 +51,6 @@ def create_app():
     app.register_blueprint(book_blueprint(db))
     app.register_blueprint(loan_blueprint(db))
     app.register_blueprint(changelog_blueprint(db))
+    app.register_blueprint(pokedex_blueprint(db))
 
     return app
