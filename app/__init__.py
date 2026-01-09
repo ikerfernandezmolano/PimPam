@@ -8,6 +8,12 @@ from app.controller.ui.pokemon_controller import pokemon_blueprint
 
 from app.database.connection import Connection
 from app.config import Config
+from app.controller.ui.book_controller import book_blueprint
+from app.controller.ui.loan_controller import loan_blueprint
+from app.controller.ui.user_controlller import user_blueprint
+from app.controller.ui.changelog_controller import changelog_blueprint
+from app.database.connection import Connection
+from config import Config
 
 
 def init_db():
@@ -17,6 +23,14 @@ def init_db():
         conn = sqlite3.connect(Config.DB_PATH)
         with open('app/database/schema.sql') as f:
             conn.executescript(f.read())
+    conn = sqlite3.connect(Config.DB_PATH)
+    try:
+        with open('app/database/schema.sql') as f:
+            print("Creando tablas con schema.sql...")
+            conn.executescript(f.read())
+    except Exception as e:
+        print(f"Error creando tablas: {e}")
+    finally:
         conn.close()
 
 def create_app():
@@ -31,5 +45,9 @@ def create_app():
 
     app.register_blueprint(equipos_blueprint(db))
     app.register_blueprint(pokemon_blueprint(db))
+    app.register_blueprint(user_blueprint(db))
+    app.register_blueprint(book_blueprint(db))
+    app.register_blueprint(loan_blueprint(db))
+    app.register_blueprint(changelog_blueprint(db))
 
     return app

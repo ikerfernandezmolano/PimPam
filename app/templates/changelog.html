@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Changelog</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='changelog.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="#" class="back-arrow">
+        <img src="https://img.icons8.com/ios-filled/50/000000/left.png" alt="Volver">
+    </a>
+    <div class="menu-icons">
+        <div class="menu-item"><img src="{{ url_for('static', filename='snorlax.png') }}"><span>MI CUENTA</span></div>
+        <div class="menu-item"><img src="{{ url_for('static', filename='pikachu.png') }}"><span>MIS AMIGOS</span></div>
+        <div class="menu-item"><img src="{{ url_for('static', filename='eevee.png') }}"><span>EQUIPOS</span></div>
+    </div>
+</div>
+
+<div class="card-container">
+    <div class="changelog-header">
+        <h1 class="title">CHANGELOG</h1>
+        <div class="actions">
+            <a href="{{ url_for('changelog.ver_changelog') }}" class="btn-rojo">TODOS</a>
+            <form method="POST" action="{{ url_for('changelog.ver_changelog') }}" class="search-form">
+                <button type="submit" class="btn-rojo">BUSCAR USUARIO</button>
+                <input type="text" name="busqueda" placeholder="Nombre..." style="display:none;"> 
+            </form>
+        </div>
+    </div>
+
+    <div class="message-list">
+        {% if mensajes %}
+            {% for msg in mensajes %}
+            
+            {% set avatar = msg.Sprite if msg.Sprite else 'https://img.icons8.com/color/48/pokeball--v1.png' %}
+
+            <div class="message-item" onclick="abrirPopup(
+                '{{ msg.NombreUsuario }}', 
+                '{{ msg.Fecha }}', 
+                '{{ msg.Texto }}', 
+                '{{ avatar }}'
+            )">
+                <div class="avatar">
+                    <img src="{{ avatar }}" alt="Avatar">
+                </div>
+                <div class="content">
+                    <p class="text">
+                        <span class="username">@{{ msg.NombreUsuario }}</span> {{ msg.Texto }}
+                    </p>
+                    <p class="date">{{ msg.Fecha }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-activity">No hay actividad reciente.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div id="modalOverlay" class="modal-overlay" onclick="cerrarPopup()">
+    <div class="popup-card" onclick="event.stopPropagation()">
+        
+        <div class="popup-header">
+            <img src="https://img.icons8.com/color/48/pokeball--v1.png" class="mini-avatar">
+            <div class="header-text">
+                <span class="highlight" id="popupUser">@Usuario</span>
+                <span id="popupAction">ha realizado una acción</span>
+                <div class="time" id="popupDate">00/00/0000</div>
+            </div>
+        </div>
+
+        <div class="popup-body">
+            <div class="col-img">
+                <img id="popupImage" src="" alt="Pokemon" class="poke-big">
+            </div>
+
+            <div class="col-info">
+                <h2 class="poke-type">INFORMACIÓN</h2>
+                <p class="poke-desc" id="popupDesc">
+                    DESCRIPCIÓN DEL MENSAJE...
+                </p>
+                <div class="poke-stats">
+                    ESTADO: ACTIVO - CATEGORÍA: ENTRENADOR
+                </div>
+            </div>
+        </div>
+
+        <div class="popup-footer">
+            <button class="btn-ataques" onclick="cerrarPopup()">CERRAR</button>
+        </div>
+
+        <div class="robot-icon">
+            <img src="https://img.icons8.com/ios-filled/50/e74c3c/bot.png" alt="Bot">
+        </div>
+    </div>
+</div>
+
+<script>
+    function abrirPopup(usuario, fecha, texto, sprite) {
+        // 1. Poner los datos en la tarjeta
+        document.getElementById('popupUser').innerText = '@' + usuario;
+        document.getElementById('popupDate').innerText = fecha;
+        document.getElementById('popupDesc').innerText = texto.toUpperCase(); // Ponemos el texto en mayúsculas como en el diseño
+        document.getElementById('popupImage').src = sprite;
+        
+        // 2. Mostrar la ventana
+        document.getElementById('modalOverlay').style.display = 'flex';
+    }
+
+    function cerrarPopup() {
+        document.getElementById('modalOverlay').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
