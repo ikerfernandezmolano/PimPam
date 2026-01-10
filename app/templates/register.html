@@ -14,7 +14,7 @@
     <div class="Cuerpo"> 
       <h1>REGISTRARSE</h1>
       {% for category, mensaje in mensajes %}
-          <label>{{ mensaje }}</label>
+          <label class="message {{ category }}">{{ mensaje }}</label>
       {% endfor %}
       <form action="/register" method="POST">
           <div class="Cuerpo">

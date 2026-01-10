@@ -22,7 +22,10 @@ def db_blueprint(db):
     @bp.route('/db')
     def db():
         users = service.get_all()
-        return render_template('db.html', usuarios=users)
+        from app.controller.model.Sesion import Sesion
+        sesion = Sesion()
+        usuario_sesion = sesion.usuario  # puede ser None si nadie ha iniciado sesión
+        return render_template('db.html', usuarios=users, usuario_sesion=usuario_sesion)
 
     return bp
 
@@ -42,7 +45,7 @@ def register_blueprint(db):
                 flash("Las contraseñas no coinciden", "error")
             else:
                 try:
-                    service.registrarUsuario(user, email, password)
+                    service.añadirUsuario(user, email, password)
                     flash("Usuario creado correctamente", "success")
                     return redirect(url_for('register.register'))
                 except ValueError as e:
@@ -58,7 +61,23 @@ def signin_blueprint(db):
 
     @bp.route('/signin', methods=['GET', 'POST'])
     def signin():
-        return render_template('signin.html')
+        if request.method == 'POST':
+            email = request.form.get('email')
+            password = request.form.get('password', '').strip()
+            status = service.iniciarSesion(email,password)
+            if status == 0:
+                return redirect(url_for('pokedex.index'))
+            elif status == 1:
+                flash("EL USUARIO NO EXISTE", "error")
+            elif status == 2:
+                flash("CONTRASEÑA INCORRECTA", "error")
+            elif status == 3:
+                flash("USUARIO AÚN NO ACEPTADO", "error")
+            else:
+                flash("ERROR DESCONOCIDO, INTÉNTALO MÁS TARDE", "error")
+
+        mensajes = get_flashed_messages(with_categories=True)
+        return render_template('signin.html', mensajes=mensajes)
 
     return bp
 

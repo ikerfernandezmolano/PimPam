@@ -2,9 +2,82 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>DB - PimPam</title>
+    <title>Usuarios - PimPam</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even){
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
-    {% for u in usuarios %}
-    <p>{{ u.Nombre }}</p>
-    {% endfor %}
+<body>
+    <h1>Lista de usuarios</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>IDUsuario</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Contrasena</th>
+                <th>Estado</th>
+                <th>IDFavorito</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in usuarios %}
+            <tr>
+                <td>{{ u.IDUsuario }}</td>
+                <td>{{ u.Nombre }}</td>
+                <td>{{ u.Email }}</td>
+                <td>{{ u.Contrasena }}</td>
+                <td>{{ u.Estado }}</td>
+                <td>{{ u.IDFavorito }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">No hay usuarios registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <h1>Sesión</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>IDUsuario</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Contrasena</th>
+                <th>Estado</th>
+                <th>IDFavorito</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ usuario_sesion.IDUsuario }}</td>
+                <td>{{ usuario_sesion.Nombre }}</td>
+                <td>{{ usuario_sesion.Email }}</td>
+                <td>{{ usuario_sesion.Contrasena }}</td>
+                <td>{{ usuario_sesion.Estado }}</td>
+                <td>{{ usuario_sesion.IDFavorito }}</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
 </html>
+

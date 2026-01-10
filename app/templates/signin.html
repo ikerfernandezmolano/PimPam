@@ -13,6 +13,9 @@
     </a>
     <div class="Cuerpo"> 
       <h1>INICIAR SESIÓN</h1>
+      {% for category, mensaje in mensajes %}
+          <label class="message {{ category }}">{{ mensaje }}</label>
+      {% endfor %}
       <form action="/signin" method="POST">
           <div class="Cuerpo">
               <input type="email" id="email" name="email" placeholder="CORREO ELECTRÓNICO" required>
