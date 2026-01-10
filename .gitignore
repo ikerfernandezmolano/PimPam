@@ -7,3 +7,5 @@ __pycache__/
 *.pyc
 instance/
 .env
+
+app/library.sqlite
