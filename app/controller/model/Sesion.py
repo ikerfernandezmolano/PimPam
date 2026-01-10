@@ -19,7 +19,7 @@ class Sesion:
             IDFavorito=pNombrePKFav
         )
 
-    def cerrar(self):
+    def cerrarSesion(self):
         """Cerrar sesión"""
         self.usuario = None
 

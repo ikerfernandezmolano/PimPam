@@ -83,4 +83,36 @@ def signin_blueprint(db):
         return render_template('signin.html', mensajes=mensajes)
 
     return bp
+    
+def modifyUser_blueprint(db):
+    bp = Blueprint('modifyUser', __name__)
+    service = GestorUsuarios(db)
 
+    @bp.route('/modifyUser', methods=['GET', 'POST'])
+    def modifyUser():
+        if request.method == 'POST':
+            user = request.form.get('user')
+            email = request.form.get('email')
+            password = request.form.get('password', '').strip()
+            password_confirm = request.form.get('confirm_password', '').strip()
+
+            if password != password_confirm:
+                flash("LAS CONTRASEÑAS NO COINCIDEN", "error")
+            else:
+                status = service.añadirUsuario(user, email, password)
+                if status == 0:
+                    flash("SOLICITUD DE REGISTRO ENVIADA", "success")
+                elif status == 1:
+                    flash("USUARIO YA EXISTE", "error")
+                elif status == 2:
+                    flash("CORREO PREVIAMENTE REGISTRADO", "error")
+                elif status == 3:
+                    flash("ERROR DESCONOCIDO INTÉNTALO MÁS TARDE", "error")
+        from app.controller.model.Sesion import Sesion
+        sesion = Sesion()
+        usuario_sesion = sesion.usuario  # puede ser None si nadie ha iniciado sesión
+        return render_template('modifyUser.html', usuario_sesion=usuario_sesion)
+
+    return bp
+    
+    

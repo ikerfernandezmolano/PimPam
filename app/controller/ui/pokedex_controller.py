@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for
 
 def pokedex_blueprint(db):
     bp = Blueprint('pokedex', __name__)
@@ -29,5 +29,14 @@ def pokedex_blueprint(db):
         ]
 
         return render_template('pokedex.html', destacado=pokemon_destacado, pokemons=lista_pokemon)
+    
+    @bp.route("/logout")
+    def logout():
+        from app.controller.model.Sesion import Sesion
+        # Limpiar la sesión
+        sesion = Sesion().cerrarSesion()
+        # Redirigir a la página de inicio
+        return redirect(url_for("home.root"))
 
     return bp
+    
