@@ -68,11 +68,11 @@ class GestorUsuarios:
         if pkFav is None or pkFav == '':
             pkFavAux = sesion['Favorito']
             resultado = self.db.select(
-                sentence="SELECT IDPokedex FROM Especie WHERE Nombre=?",
+                sentence="SELECT PokedexID FROM Especie WHERE Nombre=?",
                 parameters=[pkFavAux]
             )
             if resultado:
-                pkFav = resultado[0]["IDPokedex"]
+                pkFav = resultado[0]["PokedexID"]
             else:
                 pkFav = 1  # valor por defecto
 
@@ -88,7 +88,7 @@ class GestorUsuarios:
                 sentence="UPDATE Usuario SET Email=?, Contrasena=?, IDFavorito=? WHERE IDUsuario=?",
                 parameters=[email, password_new, pkFav, sesion['IDUsuario']]
             )
-            Sesion().editSession(pEmail=email , pContraseña=password_new, pNombrePKFav=pkFavAux)
+            Sesion().editSession(pEmail=email , pContraseña=password_new, pNombrePKFav=sesion['Favorito'], pEstado='')
             return 0  # éxito
         except Exception as e:
             msg = str(e)
