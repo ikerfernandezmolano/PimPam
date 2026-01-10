@@ -66,11 +66,17 @@ class GestorUsuarios:
 
         # --- FAVORITO ---
         if not pkFav:
-            resultado = self.db.select(
+            pkFavSes = sesion['Favorito']
+            pkFav = self.db.select(
                 sentence="SELECT PokedexID FROM Especie WHERE Nombre=?",
-                parameters=[sesion['Favorito']]
+                parameters=[pkFavSes]
             )
-            pkFav = resultado[0]["PokedexID"] if resultado else 1
+        else:
+            pkFavSes=pkFav
+            pkFav = self.db.select(
+                sentence="SELECT PokedexID FROM Especie WHERE Nombre=?",
+                parameters=[pkFav]
+            )
 
         # --- CONTRASEÑA ---
         if password_old or password_new:
@@ -97,7 +103,7 @@ class GestorUsuarios:
             Sesion().editSession(
                 pEmail=email,
                 pContraseña=nueva_password,
-                pNombrePKFav=pkFav,
+                pNombrePKFav=pkFavSes,
                 pEstado=''
             )
             return 0
