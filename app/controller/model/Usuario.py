@@ -16,4 +16,14 @@ class Usuario:
             "Estado": self.Estado,
             "Favorito": self.Favorito
         }
+    
+    def editUser(self, pEmail, pContraseña, pNombrePKFav, pEstado):
+            if pEmail != '' and pEmail is not None:
+                self.Email = pEmail
+            if pContraseña != '' and pContraseña is not None:
+                self.Contrasena = pContraseña
+            if pNombrePKFav != '' and pNombrePKFav  is not None:
+                self.Favorito = pNombrePKFav
+            if pEstado != '' and pEstado is not None:
+                self.Estado = pEstado
 

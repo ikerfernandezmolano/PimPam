@@ -1,3 +1,4 @@
+from app.controller.model.Usuario import Usuario  # importa tu clase Usuario
 class Sesion:
     _instance = None
 
@@ -9,7 +10,6 @@ class Sesion:
 
     def startSession(self, pIDUsuario, pNombre, pEmail, pContraseña, pAREA='Espera', pNombrePKFav="Bulbasaur"):
         """Crea la instancia de Usuario y la guarda en la sesión"""
-        from app.controller.model.Usuario import Usuario  # importa tu clase Usuario
         self.usuario = Usuario(
             IDUsuario=pIDUsuario,
             Nombre=pNombre,
@@ -25,6 +25,9 @@ class Sesion:
     
     def getSession(self):
         return self.usuario.getData()
+        
+    def editSession(self, pEmail, pContraseña, pNombrePKFav, pEstado):
+        self.usuario.editUser(pEmail, pContraseña, pNombrePKFav, pEstado)
 
     def esta_logueado(self):
         return self.usuario is not None

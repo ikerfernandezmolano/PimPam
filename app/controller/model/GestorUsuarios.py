@@ -40,6 +40,9 @@ class GestorUsuarios:
             
         if usuario['Estado'] != 'Aceptado' and usuario['Estado'] != 'Admin':
             return 3
+            
+        from app.controller.model.GestorEspecies import GestorEspecies
+        ge = GestorEspecies(self.db).initialize()
 
         # Contraseña correcta
         nombre = self.db.select(
@@ -56,8 +59,6 @@ class GestorUsuarios:
             pAREA=usuario['Estado'],
             pNombrePKFav=nombre[0]['Nombre']
         )
-        from app.controller.model.GestorEspecies import GestorEspecies
-        ge = GestorEspecies(self.db).initialize()
         return 0
     
     def modificarDatos(self, email, password_old, password_new, pkFav=None):
@@ -87,6 +88,7 @@ class GestorUsuarios:
                 sentence="UPDATE Usuario SET Email=?, Contrasena=?, IDFavorito=? WHERE IDUsuario=?",
                 parameters=[email, password_new, pkFav, sesion['IDUsuario']]
             )
+            Sesion().editSession(pEmail=email , pContraseña=password_new, pNombrePKFav=pkFavAux)
             return 0  # éxito
         except Exception as e:
             msg = str(e)
