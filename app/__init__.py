@@ -10,9 +10,7 @@ from app.controller.ui.pokedex_controller import pokedex_blueprint
 
 from app.database.connection import Connection
 from app.config import Config
-from app.controller.ui.home_controller import home_blueprint
-from app.controller.ui.signin_controller import signin_blueprint
-from app.controller.ui.register_controller import register_blueprint
+from app.controller.ui.ControladorVista import *
 from app.controller.ui.user_controlller import user_blueprint
 from app.controller.ui.changelog_controller import changelog_blueprint
 from app.database.connection import Connection
@@ -50,7 +48,7 @@ def create_app():
     app.register_blueprint(changelog_blueprint(db))
     app.register_blueprint(pokedex_blueprint(db))
     app.register_blueprint(home_blueprint())
-    app.register_blueprint(signin_blueprint())
-    app.register_blueprint(register_blueprint())
+    app.register_blueprint(signin_blueprint(db))
+    app.register_blueprint(register_blueprint(db))
 
     return app
