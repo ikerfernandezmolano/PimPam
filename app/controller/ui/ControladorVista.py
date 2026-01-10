@@ -128,6 +128,7 @@ def manageUsers_blueprint(db):
         
     @bp.route('/rojo/<int:user_id>')
     def rojo(user_id):
+        service.borrarUsuario(user_id)
         usuarios = service.get_all()
         return render_template('manageUsers.html', usuarios=usuarios)
     return bp
