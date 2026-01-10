@@ -88,7 +88,7 @@ class GestorUsuarios:
                 sentence="UPDATE Usuario SET Email=?, Contrasena=?, IDFavorito=? WHERE IDUsuario=?",
                 parameters=[email, password_new, pkFav, sesion['IDUsuario']]
             )
-            Sesion().editSession(pEmail=email , pContraseña=password_new, pNombrePKFav=sesion['Favorito'], pEstado='')
+            Sesion().editSession(pEmail=email , pContraseña=password_new, pNombrePKFav=pkFav, pEstado='')
             return 0  # éxito
         except Exception as e:
             msg = str(e)
