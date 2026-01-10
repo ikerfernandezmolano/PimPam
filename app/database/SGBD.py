@@ -3,7 +3,7 @@ import sqlite3
 from app.config import Config
 
 
-class Connection:
+class SGBD:
 
     def __init__(self):
         self.connection = sqlite3.connect(

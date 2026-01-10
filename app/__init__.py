@@ -8,12 +8,11 @@ from app.controller.ui.pokemon_controller import pokemon_blueprint
 
 from app.controller.ui.pokedex_controller import pokedex_blueprint
 
-from app.database.connection import Connection
+from app.database.SGBD import SGBD
 from app.config import Config
 from app.controller.ui.ControladorVista import *
 from app.controller.ui.user_controlller import user_blueprint
 from app.controller.ui.changelog_controller import changelog_blueprint
-from app.database.connection import Connection
 
 def init_db():
     print("Iniciando la base de datos")
@@ -40,7 +39,7 @@ def create_app():
     init_db()
 
     # Crear conexión a la base de datos
-    db = Connection()
+    db = SGBD()
 
     app.register_blueprint(equipos_blueprint(db))
     app.register_blueprint(pokemon_blueprint(db))

@@ -1,5 +1,6 @@
 from flask import Blueprint, request, redirect, render_template, flash, url_for
 from app.controller.model.GestorUsuarios import GestorUsuarios
+from app.controller.model.GestorEspecies import GestorEspecies
 from flask import get_flashed_messages
 
 def home_blueprint():
@@ -18,16 +19,13 @@ def home_blueprint():
 def db_blueprint(db):
     bp = Blueprint('db', __name__)
     service = GestorUsuarios(db)
+    service2 = GestorEspecies(db)
 
     @bp.route('/db')
     def bd():
         users = service.get_all()
-        from app.controller.model.Sesion import Sesion
-        sesion = Sesion()
-        usuario_sesion = sesion.usuario  # puede ser None si nadie ha iniciado sesión
-        from app.controller.model.GestorEspecies import GestorEspecies
-        gestorEspecies = GestorEspecies(db)
-        especies = gestorEspecies.get_all()
+        usuario_sesion = service.getSession()  # puede ser None si nadie ha iniciado sesión
+        especies = service2.get_all()
         return render_template('db.html', usuarios=users, usuario_sesion=usuario_sesion, especies=especies)
 
     return bp
@@ -90,31 +88,32 @@ def signin_blueprint(db):
 def modifyUser_blueprint(db):
     bp = Blueprint('modifyUser', __name__)
     service = GestorUsuarios(db)
+    service2 = GestorEspecies(db)
 
     @bp.route('/modifyUser', methods=['GET', 'POST'])
     def modifyUser():
         if request.method == 'POST':
-            user = request.form.get('user')
             email = request.form.get('email')
-            password = request.form.get('password', '').strip()
-            password_confirm = request.form.get('confirm_password', '').strip()
-
-            if password != password_confirm:
-                flash("LAS CONTRASEÑAS NO COINCIDEN", "error")
+            password_old = request.form.get('password_old', '').strip()
+            password_new = request.form.get('password_new', '').strip()
+            pkFav = request.form.get('pokefav', '')
+            
+            status = service.modificarDatos(email,password_old,password_new,pkFav)
+            if status == 0:
+                flash("CAMBIOS REALIZADOS CORRECTAMENTE", "success")
+            elif status == 1:
+                flash("CONTRASEÑA ACTUAL INCORRECTA", "error")
+            elif status == 2:
+                flash("CORREO YA REGISTRADO", "error")
+            elif status == 3:
+                flash("ERROR DESCONOCIDO INTÉNTALO MÁS TARDE", "error")
             else:
-                status = service.añadirUsuario(user, email, password)
-                if status == 0:
-                    flash("SOLICITUD DE REGISTRO ENVIADA", "success")
-                elif status == 1:
-                    flash("USUARIO YA EXISTE", "error")
-                elif status == 2:
-                    flash("CORREO PREVIAMENTE REGISTRADO", "error")
-                elif status == 3:
-                    flash("ERROR DESCONOCIDO INTÉNTALO MÁS TARDE", "error")
-        from app.controller.model.Sesion import Sesion
-        sesion = Sesion()
-        usuario_sesion = sesion.usuario  # puede ser None si nadie ha iniciado sesión
-        return render_template('modifyUser.html', usuario_sesion=usuario_sesion)
+                flash(status,"error")
+                
+        usuario_sesion = service.getSession() # puede ser None si nadie ha iniciado sesión
+        lista_pokemons = service2.get_all()
+        mensajes = get_flashed_messages(with_categories=True)
+        return render_template('modifyUser.html', mensajes=mensajes, usuario_sesion=usuario_sesion, lista_pokemons=lista_pokemons)
 
     return bp
     

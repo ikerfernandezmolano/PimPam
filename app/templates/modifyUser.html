@@ -16,12 +16,21 @@
       {% for category, mensaje in mensajes %}
           <label class="message {{ category }}">{{ mensaje }}</label>
       {% endfor %}
-      <form action="/modify_user" method="POST">
+      <form action="/modifyUser" method="POST">
           <div class="Cuerpo">
               <input type="email" id="email" name="email" placeholder="CORREO ELECTRÓNICO" value="{{ usuario_sesion.Email }}" required>
-              <input type="password" id="password" name="password" placeholder="CONTRASEÑA ACTUAL" required>
-              <input type="password" id="confirm_password" name="confirm_password" placeholder="NUEVA CONTRASEÑA" required>
-              <input type="pokefav" id="pokefav" name="pokefav" placeholder="ELEGIR POKEMON FAVORITO" value="{{ usuario_sesion.IDFavorito }}" required>
+              <input type="password" id="password" name="password" placeholder="CONTRASEÑA ACTUAL">
+              <input type="password" id="confirm_password" name="confirm_password" placeholder="NUEVA CONTRASEÑA">
+              
+              <select id="pokefav" name="pokefav">
+                  <option value="">ELEGIR POKEMON FAVORITO</option>
+                  {% for pokemon in lista_pokemons %}
+                      <option value="{{ pokemon.Nombre }}" {% if usuario_sesion.Favorito == pokemon %}selected{% endif %}>
+                          {{ pokemon.Nombre }}
+                      </option>
+                  {% endfor %}
+              </select>
+              
           </div>
           <div class="Botones">
               <button type="submit" class="btn">CONFIRMAR</button>

@@ -99,3 +99,25 @@ label {
     color: green;
 }
 
+select#pokefav {
+    background-color: #ffffff;
+    color: #000;
+    border: none;
+    padding: 12px 305px; /* Igual que tus inputs */
+    border-radius: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    margin-top: 25px;
+    width: fit-content;
+    text-align: center;
+}
+
+/* Opcional: estilizar el texto de los options */
+select#pokefav option {
+    text-align: center;
+    font-size: 24px;
+}
+
+
+

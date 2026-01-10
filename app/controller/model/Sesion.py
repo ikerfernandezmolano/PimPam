@@ -7,7 +7,7 @@ class Sesion:
             cls._instance.usuario = None  # Aquí guardaremos la instancia de Usuario
         return cls._instance
 
-    def startSession(self, pIDUsuario, pNombre, pEmail, pContraseña, pAREA='Espera', pNombrePKFav=1):
+    def startSession(self, pIDUsuario, pNombre, pEmail, pContraseña, pAREA='Espera', pNombrePKFav="Bulbasaur"):
         """Crea la instancia de Usuario y la guarda en la sesión"""
         from app.controller.model.Usuario import Usuario  # importa tu clase Usuario
         self.usuario = Usuario(
@@ -16,12 +16,15 @@ class Sesion:
             Email=pEmail,
             Contrasena=pContraseña,
             Estado=pAREA,
-            IDFavorito=pNombrePKFav
+            Favorito=pNombrePKFav
         )
 
     def cerrarSesion(self):
         """Cerrar sesión"""
         self.usuario = None
+    
+    def getSession(self):
+        return self.usuario.getData()
 
     def esta_logueado(self):
         return self.usuario is not None
