@@ -68,41 +68,37 @@ class GestorUsuarios:
         if not pkFav:
             pkFavSes = sesion['Favorito']
             pkFav = self.db.select(
-                sentence="SELECT PokedexID FROM Especie WHERE Nombre=?",
+                sentence="SELECT PokedexID FROM Especie WHERE Nombre=? LIMIT 1",
                 parameters=[pkFavSes]
-            )
+            )[0]['PokedexID']
         else:
             pkFavSes=pkFav
             pkFav = self.db.select(
-                sentence="SELECT PokedexID FROM Especie WHERE Nombre=?",
+                sentence="SELECT PokedexID FROM Especie WHERE Nombre=? LIMIT 1",
                 parameters=[pkFav]
-            )
+            )[0]['PokedexID']
 
         # --- CONTRASEÑA ---
-        if password_old or password_new:
-            # Si solo una está rellena → error
-            if not password_old or not password_new:
-                return 3  # faltan datos para cambiar contraseña
-
-            # Validar contraseña antigua
-            if password_old.strip() != sesion['Contrasena'].strip():
-                return 1  # contraseña antigua incorrecta
-
-            nueva_password = password_new.strip()
+        if password_new.strip():
+            if not password_old:
+                return 3
+            else:
+                if password_old.strip() != sesion['Contrasena'].strip():
+                    return 1
         else:
-            # No se cambia contraseña
-            nueva_password = sesion['Contrasena']
-
+            password_new = sesion['Contrasena']
+            
+        
         # --- UPDATE ---
         try:
             self.db.update(
                 sentence="UPDATE Usuario SET Email=?, Contrasena=?, IDFavorito=? WHERE IDUsuario=?",
-                parameters=[email, nueva_password, pkFav, sesion['IDUsuario']]
+                parameters=[email, password_new, pkFav, sesion['IDUsuario']]
             )
 
             Sesion().editSession(
                 pEmail=email,
-                pContraseña=nueva_password,
+                pContraseña=password_new,
                 pNombrePKFav=pkFavSes,
                 pEstado=''
             )
@@ -115,6 +111,11 @@ class GestorUsuarios:
         
     def getSession(self):
         return Sesion().getSession()
+        
+    def borrarUsuario(self, idUser):
+        self.db.delete(sentence="DELETE FROM Usuarios WHERE IDUsuario=?",
+        parameters=[idUser]
+        )
 
 
     def get_all(self):

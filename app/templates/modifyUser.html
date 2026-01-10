@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
 </head>
 <body class="background">
-    <a href="/">
+    <a href="/pokedex">
       <img src="{{ url_for('static', filename='return.png') }}" class="flecha">
     </a>
     <div class="Cuerpo"> 
@@ -19,8 +19,8 @@
       <form action="/modifyUser" method="POST">
           <div class="Cuerpo">
               <input type="email" id="email" name="email" placeholder="CORREO ELECTRÓNICO" value="{{ usuario_sesion.Email }}" required>
-              <input type="password" id="password" name="password" placeholder="CONTRASEÑA ACTUAL">
-              <input type="password" id="confirm_password" name="confirm_password" placeholder="NUEVA CONTRASEÑA">
+              <input type="password" id="password_old" name="password_old" placeholder="CONTRASEÑA ACTUAL">
+              <input type="password" id="password_new" name="password_new" placeholder="NUEVA CONTRASEÑA">
               
               <select id="pokefav" name="pokefav">
                   <option value="">ELEGIR POKEMON FAVORITO</option>

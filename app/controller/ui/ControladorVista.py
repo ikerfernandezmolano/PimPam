@@ -108,7 +108,7 @@ def modifyUser_blueprint(db):
             elif status == 3:
                 flash("COMPLETA TODOS LOS CAMPOS", "error")
             else:
-                flash("ERROR DESCONOCIDO INTÉNTALO MÁS TARDE","error")
+                flash(status,"error")
                 
         usuario_sesion = service.getSession() # puede ser None si nadie ha iniciado sesión
         lista_pokemons = service2.get_all()
@@ -116,5 +116,26 @@ def modifyUser_blueprint(db):
         return render_template('modifyUser.html', mensajes=mensajes, usuario_sesion=usuario_sesion, lista_pokemons=lista_pokemons)
 
     return bp
+    
+def manageUsers_blueprint(db):
+    bp = Blueprint('manageUsers', __name__)
+    service = GestorUsuarios(db)
+
+    @bp.route('/manageUsers')
+    def manageUsers():
+        usuarios = service.get_all()
+        return render_template('manageUsers.html', usuarios=usuarios)
+        
+    @bp.route('/rojo/<int:user_id>')
+    def rojo(user_id):
+        usuarios = service.get_all()
+        return render_template('manageUsers.html', usuarios=usuarios)
+    return bp
+    
+    @bp.route('/modifyUser<int:user_id>')
+    def lapiz(user_id):
+        usuarios = service.get_all()
+        return redirect(url_for('modifyUser.root'))
+
     
     

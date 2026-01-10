@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Usuarios - PimPam</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='manageUsers.css') }}">
+</head>
+<body class="background">
+    <a href="/pokedex">
+        <img src="{{ url_for('static', filename='return.png') }}" class="flecha">
+    </a>
+    <div class="top-bar">
+        <div class="top-left">
+            <h1>BÚSQUEDA</h1>
+        </div>
+
+        <div class="top-right">
+            <h1>GESTIÓN DE USUARIOS</h1>
+        </div>
+    </div>
+    <div class="pokedex-main-container">
+        <div class="pokedex-left-panel">
+            {% for u in usuarios %}
+                <p>{{ u['Nombre'] }}</p>
+                <p>Pokemon Favorito: {{ u['IDFavorito'] }}</p>
+                <a href="/modifyUserAdmin{{u['IDUsuario']}}">
+                    <img src="{{ url_for('static', filename='lapiz.png') }}" class="lapiz">
+                </a>
+                <a href="/rojo2/{{u['IDUsuario']}}">
+                    <img src="{{ url_for('static', filename='rojo.png') }}" class="rojo">
+                </a>
+            {% endfor %}
+        </div>
+
+        <div class="pokedex-right-panel">
+            {% for u in usuarios %}
+                <p>{{ u['Nombre'] }}</p>
+                <p>Pokemon Favorito: {{ u['IDFavorito'] }}</p>
+                <a href="/verde/{{u['IDUsuario']}}">
+                    <img src="{{ url_for('static', filename='verde.png') }}" class="verde">
+                </a>
+                <a href="/rojo/{{u['IDUsuario']}}">
+                    <img src="{{ url_for('static', filename='rojo.png') }}" class="rojo">
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
