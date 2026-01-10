@@ -78,6 +78,49 @@
             </tr>
         </tbody>
     </table>
+    
+    <h1>Lista de especies</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>EsLegendario</th>
+                <th>Generacion</th>
+                <th>Sprite</th>
+                <th>NombreItem</th>
+                <th>Descripcion</th>
+                <th>Altura</th>
+                <th>Peso</th>
+                <th>Categoria</th>
+                <th>TieneEvolucion</th>
+                <th>Prevolucion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in especies %}
+            <tr>
+                <td>{{ e.PokedexID }}</td>
+                <td>{{ e.Nombre }}</td>
+                <td>{{ e.EsLegendario }}</td>
+                <td>{{ e.Generacion }}</td>
+                <td>{{ e.Sprite }}</td>
+                <td>{{ e.NombreItem }}</td>
+                <td>{{ e.Descripcion }}</td>
+                <td>{{ e.Altura }}</td>
+                <td>{{ e.Peso }}</td>
+                <td>{{ e.Categoria }}</td>
+                <td>{{ e.TieneEvolucion }}</td>
+                <td>{{ e.Prevolucion }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="11">No hay usuarios registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>
 

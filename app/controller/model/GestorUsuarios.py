@@ -50,6 +50,8 @@ class GestorUsuarios:
             pAREA=usuario['Estado'],
             pNombrePKFav=usuario['IDFavorito']
         )
+        from app.controller.model.GestorEspecies import GestorEspecies
+        ge = GestorEspecies(self.db).initialize()
         return 0
 
 

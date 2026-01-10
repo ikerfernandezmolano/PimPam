@@ -20,12 +20,15 @@ def db_blueprint(db):
     service = GestorUsuarios(db)
 
     @bp.route('/db')
-    def db():
+    def bd():
         users = service.get_all()
         from app.controller.model.Sesion import Sesion
         sesion = Sesion()
         usuario_sesion = sesion.usuario  # puede ser None si nadie ha iniciado sesión
-        return render_template('db.html', usuarios=users, usuario_sesion=usuario_sesion)
+        from app.controller.model.GestorEspecies import GestorEspecies
+        gestorEspecies = GestorEspecies(db)
+        especies = gestorEspecies.get_all()
+        return render_template('db.html', usuarios=users, usuario_sesion=usuario_sesion, especies=especies)
 
     return bp
 

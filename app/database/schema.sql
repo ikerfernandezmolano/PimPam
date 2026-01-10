@@ -30,11 +30,11 @@ CREATE TABLE IF NOT EXISTS Equipo (
 CREATE TABLE IF NOT EXISTS Especie (
     PokedexID INTEGER PRIMARY KEY,
     Nombre TEXT NOT NULL,
-    EsLegendario INTEGER NOT NULL,
+    EsLegendario INTEGER NOT NULL DEFAULT 0,
     Generacion INTEGER NOT NULL,
-    Sprite TEXT NOT NULL,
-    NombreItem TEXT,
-    Descripcion TEXT,
+    Sprite TEXT NOT NULL DEFAULT 'None',
+    NombreItem TEXT DEFAULT 'None',
+    Descripcion TEXT DEFAULT 'None',
     Altura REAL,
     Peso REAL,
     Categoria TEXT,
@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS Captura (
 CREATE TABLE IF NOT EXISTS Tipo (
     Nombre TEXT PRIMARY KEY
 );
+
 CREATE TABLE IF NOT EXISTS Debil (
     NombreTipoDebil TEXT,
     NombreTipoFuerte TEXT,
