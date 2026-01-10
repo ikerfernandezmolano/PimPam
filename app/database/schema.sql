@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS Usuario (
     Nombre TEXT NOT NULL,
     Email TEXT NOT NULL UNIQUE,
     Contrasena TEXT NOT NULL,
-    Estado TEXT NOT NULL,
-    IDFavorito INTEGER,
+    Estado TEXT NOT NULL DEFAULT 'Espera',
+    IDFavorito INTEGER DEFAULT 1,
     FOREIGN KEY (IDFavorito) REFERENCES Especie(PokedexID)
 );
 
