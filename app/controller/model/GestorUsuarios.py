@@ -65,8 +65,8 @@ class GestorUsuarios:
         sesion = Sesion().getSession()
 
         # Si no se pasa pkFav, se busca el favorito actual
-        if pkFav is None:
-            pkFavAux = sesion.Favorito
+        if pkFav is None or pkFav == '':
+            pkFavAux = sesion['Favorito']
             resultado = self.db.select(
                 sentence="SELECT IDPokedex FROM Especie WHERE Nombre=?",
                 parameters=[pkFavAux]
