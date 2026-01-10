@@ -1,11 +1,15 @@
 .venv/
 .idea/
+.env
+
+__pycache__/
+**/__pycache__/
+
+app/library.sqlite
 
 *.sqlite
 *.db
-__pycache__/
 *.pyc
 instance/
-.env
 
-app/library.sqlite
+
