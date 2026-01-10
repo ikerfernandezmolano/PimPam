@@ -106,9 +106,9 @@ def modifyUser_blueprint(db):
             elif status == 2:
                 flash("CORREO YA REGISTRADO", "error")
             elif status == 3:
-                flash("ERROR DESCONOCIDO INTÉNTALO MÁS TARDE", "error")
+                flash("COMPLETA TODOS LOS CAMPOS", "error")
             else:
-                flash(status,"error")
+                flash("ERROR DESCONOCIDO INTÉNTALO MÁS TARDE","error")
                 
         usuario_sesion = service.getSession() # puede ser None si nadie ha iniciado sesión
         lista_pokemons = service2.get_all()

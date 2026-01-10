@@ -64,39 +64,48 @@ class GestorUsuarios:
     def modificarDatos(self, email, password_old, password_new, pkFav=None):
         sesion = Sesion().getSession()
 
-        # Si no se pasa pkFav, se busca el favorito actual
-        if pkFav is None or pkFav == '':
-            pkFavAux = sesion['Favorito']
+        # --- FAVORITO ---
+        if not pkFav:
             resultado = self.db.select(
                 sentence="SELECT PokedexID FROM Especie WHERE Nombre=?",
-                parameters=[pkFavAux]
+                parameters=[sesion['Favorito']]
             )
-            if resultado:
-                pkFav = resultado[0]["PokedexID"]
-            else:
-                pkFav = 1  # valor por defecto
+            pkFav = resultado[0]["PokedexID"] if resultado else 1
 
-        # Si se quiere cambiar la contraseña, se valida la vieja
-        if password_old != '' and password_new != '':
+        # --- CONTRASEÑA ---
+        if password_old or password_new:
+            # Si solo una está rellena → error
+            if not password_old or not password_new:
+                return 3  # faltan datos para cambiar contraseña
+
+            # Validar contraseña antigua
             if password_old.strip() != sesion['Contrasena'].strip():
                 return 1  # contraseña antigua incorrecta
 
+            nueva_password = password_new.strip()
+        else:
+            # No se cambia contraseña
+            nueva_password = sesion['Contrasena']
+
+        # --- UPDATE ---
         try:
-            if password_new == '' or password_old == '':
-                password_new = sesion['Contrasena']
             self.db.update(
                 sentence="UPDATE Usuario SET Email=?, Contrasena=?, IDFavorito=? WHERE IDUsuario=?",
-                parameters=[email, password_new, pkFav, sesion['IDUsuario']]
+                parameters=[email, nueva_password, pkFav, sesion['IDUsuario']]
             )
-            Sesion().editSession(pEmail=email , pContraseña=password_new, pNombrePKFav=pkFav, pEstado='')
-            return 0  # éxito
-        except Exception as e:
-            msg = str(e)
-            if "Usuario.Email" in msg:
-                return 2  # email repetido
-            else:
-                return msg  # otro error de integridad
 
+            Sesion().editSession(
+                pEmail=email,
+                pContraseña=nueva_password,
+                pNombrePKFav=pkFav,
+                pEstado=''
+            )
+            return 0
+
+        except Exception as e:
+            if "Usuario.Email" in str(e):
+                return 2  # email repetido
+            return str(e)
         
     def getSession(self):
         return Sesion().getSession()
