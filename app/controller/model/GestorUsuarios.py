@@ -4,10 +4,21 @@ class GestorUsuarios:
         self.db = db
 
     def añadirUsuario(self, user, email, passwd):
-        self.db.insert(
-            sentence="INSERT INTO Usuario (Nombre, Email, Contrasena,Estado) VALUES (?,?,?,?)",
-            parameters=[user.strip(),email.strip(),passwd.strip(),"Espera"]
-        )
+        try:
+            self.db.insert(
+                sentence="INSERT INTO Usuario (Nombre, Email, Contrasena,Estado) VALUES (?,?,?,?)",
+                parameters=[user.strip(),email.strip(),passwd.strip(),"Espera"]
+            )
+            return 0
+        except Exception as e:
+            msg = str(e)
+
+            if "Usuario.Nombre" in msg:
+                return 1  # nombre repetido
+            elif "Usuario.Email" in msg:
+                return 2  # email repetido
+            else:
+                return 3  # otro error de integridad
         
     def iniciarSesion(self, email, passwd):
         rows = self.db.select(
