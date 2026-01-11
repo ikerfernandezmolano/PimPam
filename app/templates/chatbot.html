@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>ChatBot - PimPam</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='chatbot.css') }}">
+</head>
+
+<body class="background">
+
+  <!-- Botón volver (círculo) -->
+  <a href="/pokedex" class="back-btn" aria-label="Volver">
+    ←
+  </a>
+
+  <div class="chatbot-wrapper">
+
+    <!-- Header blanco -->
+    <div class="chatbot-header">
+      <div class="chatbot-title">PokeBot – Tu asistente Pokémon</div>
+      <div class="chatbot-subtitle">Pregúntame lo que necesites</div>
+    </div>
+
+    <!-- Panel comandos -->
+    <div class="commands-panel">
+      <div class="cmd-line">/stats &lt;pokémon&gt; → Habilidades y estadísticas</div>
+      <div class="cmd-line">/weaknesses &lt;pokémon&gt; → Fortalezas y debilidades</div>
+      <div class="cmd-line">/evolution &lt;pokémon&gt; → Cadena evolutiva</div>
+      <div class="cmd-line">/score_team &lt;equipo&gt; → Evaluar equipo Pokémon</div>
+      <div class="cmd-line">/compare &lt;pokémon1&gt; &lt;pokémon2&gt; → Comparar estadísticas</div>
+    </div>
+
+    <!-- Zona chat (por ahora vacía) -->
+    <div class="chat-area" id="chatlog">
+      <!-- En Tarea 2/3 añadiremos burbujas -->
+    </div>
+
+    <!-- Input abajo -->
+    <div class="input-bar">
+      <input id="cmd" type="text" placeholder="Escribe un comando..." autocomplete="off">
+      <button id="send" class="send-btn" aria-label="Enviar">
+        <!-- icono simple -->
+        ➤
+      </button>
+    </div>
+
+  </div>
+
+</body>
+</html>

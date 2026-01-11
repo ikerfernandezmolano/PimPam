@@ -13,6 +13,8 @@ from app.config import Config
 from app.controller.ui.ControladorVista import *
 from app.controller.ui.user_controlller import user_blueprint
 from app.controller.ui.changelog_controller import changelog_blueprint
+from app.controller.ui.chatbot_controller import chatbot_blueprint
+
 
 def init_db():
     print("Iniciando la base de datos")
@@ -46,6 +48,7 @@ def create_app():
     app.register_blueprint(user_blueprint(db))
     app.register_blueprint(changelog_blueprint(db))
     app.register_blueprint(pokedex_blueprint(db))
+    app.register_blueprint(chatbot_blueprint(db))
     app.register_blueprint(home_blueprint())
     app.register_blueprint(signin_blueprint(db))
     app.register_blueprint(modifyUser_blueprint(db))
