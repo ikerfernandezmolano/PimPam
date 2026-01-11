@@ -14,3 +14,7 @@ app/library.sqlite
 instance/
 
 
+__pycache__/
+*.pyc
+*.sqbpro
+venv/

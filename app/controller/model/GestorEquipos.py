@@ -11,35 +11,41 @@ class GestorEquipos:
     def getPokemonEquipo(self, idEquipo):
         return self.db.select(
             """
-            SELECT p.IDPokemon, p.Nombre, e.Sprite, rep.Slot
+            SELECT rep.Slot, p.IDPokemon, p.Nombre, p.Sprite
             FROM REquipoPokemon rep
             JOIN Pokemon p ON p.IDPokemon = rep.IDPokemon
-            JOIN Especie e ON e.PokedexID = p.IDEspecie
             WHERE rep.IDEquipo = ?
-            ORDER BY rep.Slot
             """,
-            [idEquipo]
+            (idEquipo,)
         )
 
+
     def getPokedex(self):
-        return self.db.select(
-            "SELECT IDPokemon, Nombre FROM Pokemon ORDER BY Nombre"
-        )
+         return self.db.select("SELECT * FROM Pokemon")
 
     def crearEquipo(self, idUsuario, nombre):
         self.db.insert(
             "INSERT INTO Equipo (Nombre, IDUsuario) VALUES (?, ?)",
-            [nombre, idUsuario]
+            (nombre, idUsuario)
         )
 
+        fila = self.db.select(
+            "SELECT MAX(IDEquipo) AS id FROM Equipo WHERE IDUsuario = ?",
+            (idUsuario,)
+        )
+
+        return fila[0]["id"]
+
+
+
     def eliminarEquipo(self, idEquipo):
-        self.db.insert(
-            "DELETE FROM REquipoPokemon WHERE IDEquipo = ?",
-            [idEquipo]
+        self.db.delete(
+            "DELETE FROM REquipoPokemon WHERE IDEquipo = ? AND Slot= ?",
+            (idEquipo,slot)
         )
         self.db.insert(
-            "DELETE FROM Equipo WHERE IDEquipo = ?",
-            [idEquipo]
+            "DELETE FROM Equipo WHERE IDEquipo = ? AND Slot= ?",
+            (idEquipo,slot)
         )
 
     def insertarPokemon(self, idEquipo, idPokemon, slot):

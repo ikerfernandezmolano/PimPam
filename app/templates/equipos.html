@@ -8,23 +8,24 @@
 
 <body class="background">
 
+<a href="{{ url_for('pokedex.index') }}">
+    <img src="{{ url_for('static', filename='return.png') }}" class="flecha">
+</a>
+
 <header class="top-bar">
-    <div class="header-left">
-        <span class="back">←</span>
-        <span class="header-title">EQUIPOS</span>
-    </div>
+    <div class="header-left"></div>
 
     <nav class="menu">
         <a href="#" class="menu-item">
-            <img src="{{ url_for('static', filename='eevee.png') }}" class="icon">
+            <img src="{{ url_for('static', filename='eevee.png') }}">
             <span>MI CUENTA</span>
         </a>
         <a href="#" class="menu-item">
-            <img src="{{ url_for('static', filename='pikachu.png') }}" class="icon">
+            <img src="{{ url_for('static', filename='pikachu.png') }}">
             <span>MIS AMIGOS</span>
         </a>
         <a href="#" class="menu-item active">
-            <img src="{{ url_for('static', filename='snorlax.png') }}" class="icon">
+            <img src="{{ url_for('static', filename='snorlax.png') }}">
             <span>EQUIPOS</span>
         </a>
     </nav>
@@ -32,15 +33,15 @@
 
 <div class="container">
 
-{% for equipo in equipos %}
+{% if equipo_activo %}
 <div class="team-block">
 
     <div class="team-header">
         <form method="post"
-              action="{{ url_for('equipos.modificar_nombre_equipo', idEquipo=equipo.IDEquipo) }}">
+              action="{{ url_for('equipos.modificar_nombre_equipo', idEquipo=equipo_activo.IDEquipo) }}">
             <input type="text"
                    name="nombre"
-                   value="{{ equipo.Nombre }}"
+                   value="{{ equipo_activo.Nombre }}"
                    class="team-name-input"
                    onchange="this.form.submit()">
         </form>
@@ -48,15 +49,13 @@
 
     <div class="team-row">
     {% for i in range(6) %}
-        {% set poke = equipo.pokemon | selectattr("Slot", "equalto", i) | list %}
-
+        {% set poke = equipo_activo.pokemon | selectattr("Slot", "equalto", i) | list %}
         <form method="post"
-              action="{{ url_for('equipos.modificar_pokemon', idEquipo=equipo.IDEquipo) }}"
+              action="{{ url_for('equipos.modificar_pokemon', idEquipo=equipo_activo.IDEquipo) }}"
               class="slot-form">
-
             <input type="hidden" name="slot" value="{{ i }}">
 
-            <label class="slot-click">
+            <div class="slot-click" tabindex="0">
                 {% if poke %}
                     <img src="{{ poke[0].Sprite }}" class="pokemon">
                 {% else %}
@@ -64,35 +63,36 @@
                 {% endif %}
 
                 <select name="idPokemon" onchange="this.form.submit()">
-                    <option value="">Vacío</option>
+                    <option value="__empty__" {% if not poke %}selected{% endif %}>Vacío</option>
                     {% for p in pokedex %}
-                        <option value="{{ p.IDPokemon }}">
+                        <option value="{{ p.IDPokemon }}" 
+                            {% if poke and poke[0].IDPokemon == p.IDPokemon %}selected{% endif %}>
                             {{ p.Nombre }}
                         </option>
                     {% endfor %}
                 </select>
-            </label>
 
+            </div>
         </form>
     {% endfor %}
     </div>
 
     <div class="team-actions">
         <form method="post"
-              action="{{ url_for('equipos.eliminar_equipo', idEquipo=equipo.IDEquipo) }}">
+              action="{{ url_for('equipos.eliminar_equipo', idEquipo=equipo_activo.IDEquipo) }}">
             <button class="delete">ELIMINAR</button>
         </form>
     </div>
 
 </div>
-{% endfor %}
+{% endif %}
 
 <div class="teams-list">
     {% for equipo in equipos %}
-        <div class="ball">
+        <a href="{{ url_for('equipos.cargar_equipos', equipo_id=equipo.IDEquipo) }}" class="ball">
             <img src="{{ url_for('static', filename='pokeball.png') }}" class="ball-img">
             <span>{{ equipo.Nombre }}</span>
-        </div>
+        </a>
     {% endfor %}
 
     <form method="post" action="{{ url_for('equipos.crear_equipo') }}">
@@ -108,6 +108,5 @@
 <div class="red-line"></div>
 
 </div>
-
 </body>
 </html>

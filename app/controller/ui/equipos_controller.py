@@ -9,6 +9,7 @@ def equipos_blueprint(db):
     @bp.route("/equipos")
     def cargar_equipos():
         idUsuario = session.get("user_id", 1)
+        equipo_activo_id = request.args.get("equipo_id", type=int)
 
         equipos_db = gestor.getEquiposUsuario(idUsuario)
         equipos = []
@@ -18,11 +19,28 @@ def equipos_blueprint(db):
             equipo["pokemon"] = gestor.getPokemonEquipo(equipo["IDEquipo"])
             equipos.append(equipo)
 
+        if not equipos:
+            return render_template(
+                "equipos.html",
+                equipos=[],
+                equipo_activo=None,
+                pokedex=[]
+            )
+
+        if equipo_activo_id:
+            equipo_activo = next(
+                (e for e in equipos if e["IDEquipo"] == equipo_activo_id),
+                equipos[0]
+            )
+        else:
+            equipo_activo = equipos[0]
+
         pokedex = gestor.getPokedex()
 
         return render_template(
             "equipos.html",
             equipos=equipos,
+            equipo_activo=equipo_activo,
             pokedex=pokedex
         )
 
@@ -30,8 +48,8 @@ def equipos_blueprint(db):
     def crear_equipo():
         idUsuario = session.get("user_id", 1)
         nombre = request.form["nombre"]
-        gestor.crearEquipo(idUsuario, nombre)
-        return redirect(url_for("equipos.cargar_equipos"))
+        idEquipo = gestor.crearEquipo(idUsuario, nombre)
+        return redirect(url_for("equipos.cargar_equipos", equipo_id=idEquipo))
 
     @bp.route("/equipos/eliminar/<int:idEquipo>", methods=["POST"])
     def eliminar_equipo(idEquipo):
@@ -42,18 +60,18 @@ def equipos_blueprint(db):
     def modificar_nombre_equipo(idEquipo):
         nombre = request.form["nombre"]
         gestor.modificarNombreEquipo(idEquipo, nombre)
-        return redirect(url_for("equipos.cargar_equipos"))
+        return redirect(url_for("equipos.cargar_equipos", equipo_id=idEquipo))
 
     @bp.route("/equipos/<int:idEquipo>/pokemon", methods=["POST"])
     def modificar_pokemon(idEquipo):
-        slot = request.form["slot"]
+        slot = int(request.form["slot"])
         idPokemon = request.form.get("idPokemon")
-
-        if not idPokemon:
+        if idPokemon == "__empty__":
             gestor.eliminarPokemon(idEquipo, slot)
         else:
-            gestor.reemplazarPokemon(idEquipo, slot, idPokemon)
+            gestor.reemplazarPokemon(idEquipo, slot, int(idPokemon))
 
-        return redirect(url_for("equipos.cargar_equipos"))
+
+        return redirect(url_for("equipos.cargar_equipos", equipo_id=idEquipo))
 
     return bp
