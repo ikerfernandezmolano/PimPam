@@ -48,11 +48,18 @@
 <div class="card-container">
     <div class="changelog-header">
         <h1 class="title">CHANGELOG</h1>
+        
         <div class="actions">
             <a href="{{ url_for('changelog.ver_changelog') }}" class="btn-rojo">TODOS</a>
-            <form method="POST" action="{{ url_for('changelog.ver_changelog') }}" class="search-form">
-                <button type="submit" class="btn-rojo">BUSCAR USUARIO</button>
-                <input type="text" name="busqueda" placeholder="Nombre..." style="display:none;"> 
+
+            <form method="POST" action="{{ url_for('changelog.ver_changelog') }}" class="search-form" id="formBusqueda">
+                
+                <button type="button" class="btn-rojo" onclick="mostrarBuscador()">BUSCAR USUARIO</button>
+                
+                <input type="text" id="campoBusqueda" name="busqueda" 
+                       placeholder="Escribe y pulsa Enter..." 
+                       style="display:none;" 
+                       onkeypress="comprobarEnter(event)"> 
             </form>
         </div>
     </div>
@@ -125,6 +132,25 @@
 </div>
 
 <script>
+    // --- Lógica del Buscador ---
+    function mostrarBuscador() {
+        var input = document.getElementById('campoBusqueda');
+        var btn = document.querySelector('.search-form button');
+        
+        if (input.style.display === 'none') {
+            input.style.display = 'inline-block'; // Muestra la caja
+            input.focus(); // Pone el cursor dentro
+            btn.style.display = 'none'; // Oculta el botón (opcional, si quieres que desaparezca)
+        }
+    }
+
+    function comprobarEnter(e) {
+        if (e.keyCode === 13) { // Si pulsan Enter
+            document.getElementById('formBusqueda').submit(); // Envía el formulario
+        }
+    }
+
+    // --- Lógica del Popup ---
     function abrirPopup(usuario, fecha, texto, sprite) {
         document.getElementById('popupUser').innerText = '@' + usuario;
         document.getElementById('popupDate').innerText = fecha;
