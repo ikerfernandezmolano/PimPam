@@ -25,3 +25,11 @@ class GestorEspecies:
         rows = self.db.select("SELECT * FROM Especie")
         return [dict(row) for row in rows]
 
+    def getPokemonPorNombre(self, nombre: str):
+        rows = self.db.select(
+            "SELECT * FROM Pokemon WHERE LOWER(Nombre) = LOWER(?) LIMIT 1",
+            [nombre]
+        )
+        if not rows:
+            return None
+        return dict(rows[0])

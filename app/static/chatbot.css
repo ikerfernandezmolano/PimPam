@@ -27,6 +27,7 @@
   z-index: 10;
 }
 
+/* Contenedor general del chatbot */
 .chatbot-wrapper{
   width: min(1100px, 92vw);
   height: min(720px, 86vh);
@@ -36,6 +37,10 @@
   background: rgba(255,255,255,0.08);
   backdrop-filter: blur(1px);
   position: relative;
+
+  /* IMPORTANTE: permite que la barra inferior esté dentro sin romper nada */
+  padding-bottom: 110px; /* hueco reservado para el input */
+  box-sizing: border-box;
 }
 
 /* Header blanco */
@@ -77,13 +82,31 @@
   font-size: 16px;
 }
 
-/* Zona chat (vacía por ahora) */
+/* Zona chat */
 .chat-area{
   width: 78%;
   margin: 14px auto 0 auto;
-  height: 340px;
+
+  /* la altura debe adaptarse al wrapper y al contenido anterior */
+  height: calc(100% - 28px - 22px - 140px - 170px); 
+  /* explicación: es una resta aproximada para que el chat crezca sin pisar el input.
+     Si ves que te queda demasiado alto/bajo, ajusta 10-20px. */
+
   overflow-y: auto;
-  padding: 6px 2px;
+  padding: 10px 6px 10px 6px;
+  box-sizing: border-box;
+
+  /* esto evita que el último mensaje quede detrás del input */
+  padding-bottom: 90px;
+}
+
+/* Scrollbar (opcional, no rompe nada) */
+.chat-area::-webkit-scrollbar{
+  width: 10px;
+}
+.chat-area::-webkit-scrollbar-thumb{
+  background: rgba(0,0,0,0.18);
+  border-radius: 20px;
 }
 
 /* Barra inferior */
@@ -96,6 +119,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  z-index: 5; /* por si alguna burbuja se superpone */
 }
 
 .input-bar input{
@@ -108,6 +132,7 @@
   font-size: 16px;
   background: rgba(255,255,255,0.92);
   box-shadow: 0 12px 22px rgba(0,0,0,0.15);
+  box-sizing: border-box;
 }
 
 .send-btn{
@@ -130,7 +155,7 @@
 }
 
 /* ===================== */
-/* Burbujas del chat    */
+/* Burbujas del chat     */
 /* ===================== */
 
 .bubble{
@@ -142,6 +167,7 @@
   font-size: 15px;
   box-shadow: 0 10px 18px rgba(0,0,0,0.12);
   white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .bubble.user{
