@@ -1,4 +1,5 @@
 import os.path
+import os
 import sqlite3
 
 from flask import Flask
@@ -18,18 +19,21 @@ from app.controller.ui.chatbot_controller import chatbot_blueprint
 
 def init_db():
     print("Iniciando la base de datos")
-    if os.path.exists(Config.DB_PATH):
-        print("La base de datos existe")
-        conn = sqlite3.connect(Config.DB_PATH)
-        with open('app/database/schema.sql') as f:
-            conn.executescript(f.read())
     conn = sqlite3.connect(Config.DB_PATH)
     try:
-        with open('app/database/schema.sql') as f:
-            print("Creando tablas con schema.sql...")
+        # 1) schema
+        with open("app/database/schema.sql", encoding="utf-8") as f:
             conn.executescript(f.read())
+
+        # 2) seed chatbot (opcional)
+        seed_path = "app/database/seed_chatbot.sql"
+        if os.path.exists(seed_path):
+            with open(seed_path, encoding="utf-8") as f:
+                conn.executescript(f.read())
+
+        conn.commit()
     except Exception as e:
-        print(f"Error creando tablas: {e}")
+        print(f"Error inicializando BD: {e}")
     finally:
         conn.close()
 
