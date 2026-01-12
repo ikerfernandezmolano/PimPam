@@ -38,7 +38,7 @@
 
     <div class="team-header">
         <form method="post"
-              action="{{ url_for('equipos.modificar_nombre_equipo', idEquipo=equipo_activo.IDEquipo) }}">
+              action="{{ url_for('equipos.modifyName', idEquipo=equipo_activo.IDEquipo) }}">
             <input type="text"
                    name="nombre"
                    value="{{ equipo_activo.Nombre }}"
@@ -51,7 +51,7 @@
     {% for i in range(6) %}
         {% set poke = equipo_activo.pokemon | selectattr("Slot", "equalto", i) | list %}
         <form method="post"
-              action="{{ url_for('equipos.modificar_pokemon', idEquipo=equipo_activo.IDEquipo) }}"
+              action="{{ url_for('equipos.OpcionesModificarPokemon', idEquipo=equipo_activo.IDEquipo) }}"
               class="slot-form">
             <input type="hidden" name="slot" value="{{ i }}">
 
@@ -63,7 +63,7 @@
                 {% endif %}
 
                 <select name="idPokemon" onchange="this.form.submit()">
-                    <option value="__empty__" {% if not poke %}selected{% endif %}>Vacío</option>
+                    <option value="__empty__" {% if not poke %}selected{% endif %}>Eliminar</option>
                     {% for p in pokedex %}
                         <option value="{{ p.IDPokemon }}" 
                             {% if poke and poke[0].IDPokemon == p.IDPokemon %}selected{% endif %}>
@@ -79,7 +79,7 @@
 
     <div class="team-actions">
         <form method="post"
-              action="{{ url_for('equipos.eliminar_equipo', idEquipo=equipo_activo.IDEquipo) }}">
+              action="{{ url_for('equipos.deleteEquipo', idEquipo=equipo_activo.IDEquipo) }}">
             <button class="delete">ELIMINAR</button>
         </form>
     </div>
@@ -95,7 +95,7 @@
         </a>
     {% endfor %}
 
-    <form method="post" action="{{ url_for('equipos.crear_equipo') }}">
+    <form method="post" action="{{ url_for('equipos.create_equipo') }}">
         <input type="hidden" name="nombre" value="Equipo {{ equipos|length + 1 }}">
         <button type="submit" class="ball new">
             <img src="{{ url_for('static', filename='pokeball.png') }}" class="ball-img">

@@ -45,29 +45,29 @@ def equipos_blueprint(db):
         )
 
     @bp.route("/equipos/crear", methods=["POST"])
-    def crear_equipo():
+    def create_equipo():
         idUsuario = session.get("user_id", 1)
         nombre = request.form["nombre"]
-        idEquipo = gestor.crearEquipo(idUsuario, nombre)
+        idEquipo = gestor.saveNewEquipo(idUsuario, nombre)
         return redirect(url_for("equipos.cargar_equipos", equipo_id=idEquipo))
 
     @bp.route("/equipos/eliminar/<int:idEquipo>", methods=["POST"])
-    def eliminar_equipo(idEquipo):
-        gestor.eliminarEquipo(idEquipo)
+    def deleteEquipo(idEquipo):
+        gestor.deleteEquipo(idEquipo)
         return redirect(url_for("equipos.cargar_equipos"))
 
     @bp.route("/equipos/<int:idEquipo>/modificar_nombre", methods=["POST"])
-    def modificar_nombre_equipo(idEquipo):
+    def modifyName(idEquipo):
         nombre = request.form["nombre"]
-        gestor.modificarNombreEquipo(idEquipo, nombre)
+        gestor.saveNewNombre(idEquipo, nombre)
         return redirect(url_for("equipos.cargar_equipos", equipo_id=idEquipo))
 
     @bp.route("/equipos/<int:idEquipo>/pokemon", methods=["POST"])
-    def modificar_pokemon(idEquipo):
+    def OpcionesModificarPokemon(idEquipo):
         slot = int(request.form["slot"])
         idPokemon = request.form.get("idPokemon")
         if idPokemon == "__empty__":
-            gestor.eliminarPokemon(idEquipo, slot)
+            gestor.deleteEquipo(idEquipo, slot)
         else:
             gestor.reemplazarPokemon(idEquipo, slot, int(idPokemon))
 

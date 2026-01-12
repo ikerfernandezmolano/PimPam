@@ -11,7 +11,8 @@ class GestorEquipos:
     def getPokemonEquipo(self, idEquipo):
         return self.db.select(
             """
-            SELECT rep.Slot,
+            SELECT
+                rep.Slot,
                 p.IDPokemon,
                 p.Nombre,
                 e.Sprite AS Sprite
@@ -24,11 +25,17 @@ class GestorEquipos:
             (idEquipo,)
         )
 
-
     def getPokedex(self):
-        return self.db.select("SELECT * FROM Pokemon")
+        return self.db.select(
+            """
+            SELECT
+                p.IDPokemon,
+                p.Nombre
+            FROM Pokemon p
+            """
+        )
 
-    def crearEquipo(self, idUsuario, nombre):
+    def saveNewEquipo(self, idUsuario, nombre):
         self.db.insert(
             "INSERT INTO Equipo (Nombre, IDUsuario) VALUES (?, ?)",
             (nombre, idUsuario)
@@ -41,45 +48,51 @@ class GestorEquipos:
 
         return fila[0]["id"]
 
-    def eliminarEquipo(self, idEquipo):
-        self.db.delete(
-            "DELETE FROM REquipoPokemon WHERE IDEquipo = ?",
-            (idEquipo,)
-        )
-        self.db.delete(
-            "DELETE FROM Equipo WHERE IDEquipo = ?",
-            (idEquipo,)
-        )
-
-    def insertarPokemon(self, idEquipo, idPokemon, slot):
+    def insertPokemon(self, idEquipo, idPokemon, slot):
         self.db.insert(
             """
             INSERT INTO REquipoPokemon (IDEquipo, IDPokemon, Slot)
             VALUES (?, ?, ?)
             """,
-            [idEquipo, idPokemon, slot]
+            (idEquipo, idPokemon, slot)
         )
 
-    def eliminarPokemon(self, idEquipo, slot):
+    def deletePokemon(self, idEquipo, slot):
         self.db.delete(
             """
             DELETE FROM REquipoPokemon
             WHERE IDEquipo = ? AND Slot = ?
             """,
-            [idEquipo, slot]
+            (idEquipo, slot)
         )
+
+    def deleteEquipo(self, idEquipo, slot=None):
+        if slot is not None:
+            self.db.delete(
+                "DELETE FROM REquipoPokemon WHERE IDEquipo = ? AND Slot = ?",
+                (idEquipo, slot)
+            )
+        else:
+            self.db.delete(
+                "DELETE FROM REquipoPokemon WHERE IDEquipo = ?",
+                (idEquipo,)
+            )
+            self.db.delete(
+                "DELETE FROM Equipo WHERE IDEquipo = ?",
+                (idEquipo,)
+            )
 
     def reemplazarPokemon(self, idEquipo, slot, idPokemon):
-        self.eliminarPokemon(idEquipo, slot)
-        self.insertarPokemon(idEquipo, idPokemon, slot)
+        self.deletePokemon(idEquipo, slot)
+        if idPokemon is not None:
+            self.insertPokemon(idEquipo, idPokemon, slot)
 
-    def modificarNombreEquipo(self, idEquipo, nuevoNombre):
-        self.db.insert(
+    def saveNewNombre(self, idEquipo, nuevoNombre):
+        self.db.update(
             "UPDATE Equipo SET Nombre = ? WHERE IDEquipo = ?",
-            [nuevoNombre, idEquipo]
+            (nuevoNombre, idEquipo)
         )
 
-    # necesario para /score_team
     def getEquipoPorNombre(self, nombre_equipo: str):
         rows = self.db.select(
             "SELECT IDEquipo, Nombre FROM Equipo WHERE LOWER(Nombre) = LOWER(?) LIMIT 1",
