@@ -98,10 +98,25 @@ class GestorEquipos:
         self.insertPokemon(idEquipo, idPokemon, slot)
 
     def saveNewNombre(self, idEquipo, nuevoNombre):
+        equipo_actual = self.db.select("SELECT IDUsuario FROM Equipo WHERE IDEquipo = ?", (idEquipo,))
+        if not equipo_actual:
+            return False
+        
+        idUsuario = equipo_actual[0]['IDUsuario']
+
+        existe = self.db.select(
+            "SELECT IDEquipo FROM Equipo WHERE LOWER(Nombre) = LOWER(?) AND IDUsuario = ? AND IDEquipo != ?",
+            (nuevoNombre, idUsuario, idEquipo)
+        )
+
+        if existe:
+            return False
+
         self.db.update(
             "UPDATE Equipo SET Nombre = ? WHERE IDEquipo = ?",
             (nuevoNombre, idEquipo)
         )
+        return True
 
     def getEquipoPorNombre(self, nombre_equipo: str):
         rows = self.db.select(
