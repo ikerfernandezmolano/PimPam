@@ -12,7 +12,7 @@
 INSERT OR IGNORE INTO Usuario (IDUsuario, Nombre, Email, Contrasena, Estado, IDFavorito)
 VALUES (1, 'admin', 'admin@admin.com', 'admin', 'Admin', 1);
 
--- 1) Asegurar especies clave (por si initialize no se ejecutó)
+-- 1) Especies mínimas para /evolution y /weaknesses
 INSERT OR IGNORE INTO Especie
 (PokedexID, Nombre, EsLegendario, Generacion, Sprite, NombreItem, Descripcion, Altura, Peso, Categoria, TieneEvolucion, Prevolucion)
 VALUES
@@ -22,13 +22,12 @@ VALUES
 (6,'charizard',0,1,'None','None','None',17,905,'Seed',0,NULL),
 (25,'pikachu',0,1,'None','None','None',4,60,'Seed',0,NULL);
 
--- 2) Corregir evolución si ya existían (evita bucles / datos malos)
+-- 2) Corregir evolución (por si ya existían filas)
 UPDATE Especie SET TieneEvolucion = 1, Prevolucion = NULL WHERE PokedexID = 1;
 UPDATE Especie SET TieneEvolucion = 1, Prevolucion = 1    WHERE PokedexID = 2;
 UPDATE Especie SET TieneEvolucion = 0, Prevolucion = 2    WHERE PokedexID = 3;
 
--- 3) Pokémon con stats (tabla Pokemon) para /stats y /compare
--- Ponemos IDs fijos para poder referenciarlos en el equipo.
+-- 3) Pokémon con stats para /stats y /compare
 INSERT OR IGNORE INTO Pokemon
 (IDPokemon, Nombre, Nivel, PS, Ataque, AtaqueEspecial, Defensa, DefensaEspecial, Velocidad, IDEspecie)
 VALUES
@@ -38,7 +37,7 @@ VALUES
 (104,'charizard',36,78,84,109,78,85,100,6),
 (105,'pikachu',12,35,55,50,40,50,90,25);
 
--- 4) Equipo del admin para /score_team
+-- 4) Equipo demo del admin para /score_team
 INSERT OR IGNORE INTO Equipo (IDEquipo, Nombre, IDUsuario)
 VALUES (900, 'EquipoDemo', 1);
 
@@ -48,18 +47,20 @@ VALUES
 (900, 104, 2),
 (900, 105, 3);
 
--- 5) Tipos / Debilidades / Fortalezas para /weaknesses (bulbasaur)
+-- 5) Tipos y relaciones para /weaknesses (bulbasaur)
 INSERT OR IGNORE INTO Tipo (Nombre) VALUES
-('grass'), ('poison'), ('fire'), ('water'), ('ground'), ('psychic'), ('ice'), ('flying'), ('bug'), ('rock'), ('fairy');
+('grass'), ('poison'), ('fire'), ('water'), ('ground'), ('psychic'),
+('ice'), ('flying'), ('bug'), ('rock'), ('fairy');
 
--- Asignar tipos a bulbasaur (Especie 1)
+-- Tipos de bulbasaur
 INSERT OR IGNORE INTO REspecieTipo (NombreTipo, PokedexID)
 VALUES
 ('grass', 1),
 ('poison', 1);
 
--- Debil: (NombreTipoDebil, NombreTipoFuerte)
--- Débil contra:
+-- Tabla Debil:
+-- (NombreTipoDebil, NombreTipoFuerte)
+-- Si mi tipo es NombreTipoDebil => soy débil contra NombreTipoFuerte.
 INSERT OR IGNORE INTO Debil (NombreTipoDebil, NombreTipoFuerte) VALUES
 ('grass','fire'),
 ('grass','ice'),
@@ -68,11 +69,11 @@ INSERT OR IGNORE INTO Debil (NombreTipoDebil, NombreTipoFuerte) VALUES
 ('poison','psychic'),
 ('poison','ground');
 
--- Fuerte contra (para que tu query "NombreTipoFuerte = tipo" funcione):
+-- Para que "fuerte contra" funcione con tu lógica (NombreTipoFuerte = mi tipo):
 -- Si grass es fuerte contra water/ground/rock => (water, grass), (ground, grass), (rock, grass)
+-- Si poison es fuerte contra fairy => (fairy, poison)
 INSERT OR IGNORE INTO Debil (NombreTipoDebil, NombreTipoFuerte) VALUES
 ('water','grass'),
 ('ground','grass'),
 ('rock','grass'),
-('grass','poison'),  -- poison fuerte contra grass => (grass, poison)
-('fairy','poison');  -- poison fuerte contra fairy => (fairy, poison)
+('fairy','poison');

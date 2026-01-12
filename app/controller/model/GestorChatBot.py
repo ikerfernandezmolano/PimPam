@@ -6,7 +6,6 @@ class GestorChatBot:
         self.gestor_especies = gestor_especies
         self.gestor_equipos = gestor_equipos
 
-        # comandos soportados y nº de argumentos
         self.comandos = {
             "/stats": 1,
             "/weaknesses": 1,
@@ -18,11 +17,9 @@ class GestorChatBot:
     def procesarComando(self, pComando: str) -> str:
         comando = (pComando or "").strip()
 
-        # 1) vacío
         if not comando:
             return "No se puede enviar un mensaje vacío."
 
-        # 2) debe empezar por /
         if not comando.startswith("/"):
             return "Error de sintaxis. Falta el icono de inicio de comando '/'."
 
@@ -33,40 +30,47 @@ class GestorChatBot:
         if cmd == "/":
             return "Error de sintaxis. Falta el comando."
 
-        # 3) comando existe
         if cmd not in self.comandos:
             return "Error de sintaxis. Comando no encontrado."
 
-        # 4) nº de argumentos correcto
         n_req = self.comandos[cmd]
         if len(args) < n_req:
-            # el enunciado distingue a veces "Falta el argumento" vs "Falta un argumento"
-            # dejamos uno genérico y válido
             return "Error de sintaxis. Falta el argumento."
         if len(args) > n_req:
             return "Error de sintaxis. Demasiados argumentos."
 
-        # 5) enrutar
         try:
             if cmd == "/stats":
                 return self._cmd_stats(args[0])
-
             if cmd == "/weaknesses":
                 return self._cmd_weaknesses(args[0])
-
             if cmd == "/evolution":
                 return self._cmd_evolution(args[0])
-
             if cmd == "/compare":
                 return self._cmd_compare(args[0], args[1])
-
             if cmd == "/score_team":
                 return self._cmd_score_team(args[0])
-
             return "Error interno."
         except Exception:
-            # mínimo correcto: nunca debe petar el sistema
             return "Error interno. Inténtalo más tarde."
+
+    # --------------------
+    # Helpers
+    # --------------------
+
+    def _as_dict(self, row):
+        # sqlite3.Row soporta dict(row); si ya es dict, lo dejamos
+        return row if isinstance(row, dict) else dict(row)
+
+    def _total_stats(self, pk: dict) -> int:
+        return sum([
+            pk.get("PS") or 0,
+            pk.get("Ataque") or 0,
+            pk.get("Defensa") or 0,
+            pk.get("AtaqueEspecial") or 0,
+            pk.get("DefensaEspecial") or 0,
+            pk.get("Velocidad") or 0,
+        ])
 
     # --------------------
     # Implementación real
@@ -91,18 +95,8 @@ class GestorChatBot:
         if not a or not b:
             return "Pokémon no encontrado."
 
-        def total_stats(pk):
-            return sum([
-                pk.get("PS") or 0,
-                pk.get("Ataque") or 0,
-                pk.get("Defensa") or 0,
-                pk.get("AtaqueEspecial") or 0,
-                pk.get("DefensaEspecial") or 0,
-                pk.get("Velocidad") or 0,
-            ])
-
-        ta = total_stats(a)
-        tb = total_stats(b)
+        ta = self._total_stats(a)
+        tb = self._total_stats(b)
 
         if ta > tb:
             ganador = a.get("Nombre")
@@ -117,8 +111,6 @@ class GestorChatBot:
         )
 
     def _cmd_weaknesses(self, especie: str) -> str:
-        # Esto depende de tablas Tipo/Debil/REspecieTipo.
-        # Si no están pobladas, devolvemos respuesta controlada.
         info = self.gestor_especies.getDebilidadesYFortalezasPorEspecie(especie)
         if info is None:
             return "Pokémon no encontrado."
@@ -127,7 +119,6 @@ class GestorChatBot:
         deb = info.get("debilidades", [])
         fort = info.get("fortalezas", [])
 
-        # Si no hay tipos en BD, respuesta mínima y coherente
         if not tipos:
             return f"{especie}: No hay datos de tipos en la base de datos."
 
@@ -148,20 +139,25 @@ class GestorChatBot:
         return "Cadena evolutiva: " + " -> ".join(cadena)
 
     def _cmd_score_team(self, nombre_equipo: str) -> str:
-        sesion = Sesion().getSession()
-        if not sesion:
-            return "Debes iniciar sesión para usar este comando."
-
-        id_usuario = sesion.get("IDUsuario")
-        if not id_usuario:
-            return "Debes iniciar sesión para usar este comando."
-
-        equipos = self.gestor_equipos.getEquiposUsuario(id_usuario) or []
         equipo = None
-        for e in equipos:
-            if (e.get("Nombre") or "").lower() == nombre_equipo.lower():
-                equipo = e
-                break
+
+        # 1) Flujo normal: equipos del usuario logueado
+        sesion = Sesion().getSession()
+        id_usuario = None
+        if sesion:
+            id_usuario = sesion.get("IDUsuario") or sesion.get("idUsuario") or sesion.get("ID")
+
+        if id_usuario:
+            equipos = self.gestor_equipos.getEquiposUsuario(id_usuario) or []
+            for e in equipos:
+                e = self._as_dict(e)
+                if (e.get("Nombre") or "").lower() == nombre_equipo.lower():
+                    equipo = e
+                    break
+
+        # 2) Fallback: buscar por nombre global (EquipoDemo seed)
+        if not equipo:
+            equipo = self.gestor_equipos.getEquipoPorNombre(nombre_equipo)
 
         if not equipo:
             return "Equipo no encontrado."
@@ -170,26 +166,24 @@ class GestorChatBot:
         if not pokes:
             return f"El equipo '{equipo.get('Nombre')}' está vacío."
 
-        # Para evaluar el equipo según stats, buscamos cada Pokémon en tabla Pokemon
         total = 0
         n = 0
+        detalle = []
+
         for pk in pokes:
+            pk = self._as_dict(pk)
             nombre_pk = pk.get("Nombre")
             if not nombre_pk:
                 continue
+
             stats = self.gestor_especies.getPokemonPorNombre(nombre_pk)
             if not stats:
                 continue
 
-            total += sum([
-                stats.get("PS") or 0,
-                stats.get("Ataque") or 0,
-                stats.get("Defensa") or 0,
-                stats.get("AtaqueEspecial") or 0,
-                stats.get("DefensaEspecial") or 0,
-                stats.get("Velocidad") or 0,
-            ])
+            puntos = self._total_stats(stats)
+            total += puntos
             n += 1
+            detalle.append(f"{stats.get('Nombre')}={puntos}")
 
         if n == 0:
             return f"No hay estadísticas disponibles para evaluar el equipo '{equipo.get('Nombre')}'."
@@ -197,5 +191,6 @@ class GestorChatBot:
         media = total // n
         return (
             f"Equipo '{equipo.get('Nombre')}' evaluado: "
-            f"{n} Pokémon, puntuación total {total}, media {media}."
+            f"{n} Pokémon, puntuación total {total}, media {media}. "
+            f"({', '.join(detalle)})"
         )
