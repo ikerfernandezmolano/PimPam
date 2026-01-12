@@ -1,4 +1,6 @@
+import sqlite3
 class GestorEquipos:
+
     def __init__(self, db):
         self.db = db
 
@@ -36,26 +38,32 @@ class GestorEquipos:
         )
 
     def saveNewEquipo(self, idUsuario, nombre):
-        self.db.insert(
-            "INSERT INTO Equipo (Nombre, IDUsuario) VALUES (?, ?)",
-            (nombre, idUsuario)
-        )
+        equipos = self.getEquiposUsuario(idUsuario)
 
-        fila = self.db.select(
-            "SELECT MAX(IDEquipo) AS id FROM Equipo WHERE IDUsuario = ?",
-            (idUsuario,)
-        )
+        if any(e['Nombre'] == nombre for e in equipos):
+            return None
+
+        try:
+            return self.db.insert(
+                "INSERT INTO Equipo (Nombre, IDUsuario) VALUES (?, ?)",
+                (nombre, idUsuario)
+            )
+        except sqlite3.IntegrityError:
+            return None
+
+
 
         return fila[0]["id"]
 
     def insertPokemon(self, idEquipo, idPokemon, slot):
-        self.db.insert(
-            """
-            INSERT INTO REquipoPokemon (IDEquipo, IDPokemon, Slot)
-            VALUES (?, ?, ?)
-            """,
-            (idEquipo, idPokemon, slot)
-        )
+        try:
+            self.db.insert(
+                "INSERT INTO REquipoPokemon (IDEquipo, IDPokemon, Slot) VALUES (?, ?, ?)",
+                (idEquipo, idPokemon, slot)
+            )
+        except sqlite3.IntegrityError:
+            return
+
 
     def deletePokemon(self, idEquipo, slot):
         self.db.delete(
@@ -83,9 +91,11 @@ class GestorEquipos:
             )
 
     def reemplazarPokemon(self, idEquipo, slot, idPokemon):
+        pokemons = self.getPokemonEquipo(idEquipo)
         self.deletePokemon(idEquipo, slot)
-        if idPokemon is not None:
-            self.insertPokemon(idEquipo, idPokemon, slot)
+        if len(pokemons) >=6 and slot >=len(pokemons):
+            return
+        self.insertPokemon(idEquipo, idPokemon, slot)
 
     def saveNewNombre(self, idEquipo, nuevoNombre):
         self.db.update(
