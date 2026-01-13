@@ -53,3 +53,9 @@ class SGBD:
             cursor.execute(sentence)
         self.connection.commit()
         cursor.close()
+
+    def close(self):
+        try:
+            self.connection.close()
+        except Exception:
+            pass
