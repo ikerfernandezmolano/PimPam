@@ -1,4 +1,4 @@
-/* --- FUENTES Y VARIABLES --- */
+
 :root {
     --red-primary: #e74c3c;
     --bg-color: #f8f9fa;
@@ -8,7 +8,6 @@
 }
 
 body {
-    /* Fondo */
     background-image: url('fondoChangelog.png'); 
     background-size: cover;
     background-repeat: no-repeat;
@@ -18,34 +17,31 @@ body {
     
     font-family: var(--font-body);
     margin: 0;
-    /* CAMBIO: Reducido padding superior para subir todo */
     padding: 10px 20px 20px 20px; 
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    box-sizing: border-box; /* Asegura que el padding no sume al ancho total */
+    box-sizing: border-box; 
 }
 
-/* --- BARRA SUPERIOR --- */
+
 .top-bar {
     width: 100%;
-    /* CAMBIO: Ancho máximo aumentado para separar más los elementos */
     max-width: 98%; 
     display: flex;
     justify-content: space-between;
-    align-items: flex-start; /* Alineados arriba */
-    padding: 5px 0; /* Menos padding para subirlo */
+    align-items: flex-start; 
+    padding: 5px 0; 
     margin-bottom: 15px;
 }
 
 .back-arrow img {
-    width: 35px; /* Un poco más grande */
+    width: 35px; 
     height: 35px;
     opacity: 0.8;
     cursor: pointer;
     transition: transform 0.2s;
-    /* CAMBIO: Margen izquierdo negativo para pegarla más al borde si es necesario */
     margin-left: -5px; 
 }
 
@@ -56,7 +52,6 @@ body {
 .menu-icons {
     display: flex;
     gap: 30px;
-    /* CAMBIO: Margen derecho negativo para pegarlos más al borde */
     margin-right: -5px;
 }
 
@@ -79,27 +74,24 @@ body {
     height: 35px;
     object-fit: contain;
     margin-bottom: 5px;
-    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.2)); /* Pequeña sombra para resaltar */
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.2)); 
 }
 
 .menu-item span {
     font-size: 0.7rem;
     font-weight: bold;
-    color: white; /* Texto blanco para resaltar sobre el fondo rojo */
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Sombra oscura para leerlo bien */
+    color: white; 
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5); 
 }
 
-/* --- TARJETA PRINCIPAL (CUADRO BLANCO GIGANTE) --- */
 .card-container {
     background: white;
     width: 100%;
-    /* CAMBIO: Ocupa casi todo el ancho */
     max-width: 96%; 
-    /* CAMBIO: Altura mínima para ocupar casi toda la pantalla */
     min-height: 75vh; 
     border-radius: 15px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-    padding: 50px; /* Más padding interno */
+    padding: 50px; 
     box-sizing: border-box;
     position: relative;
     border-top: 6px solid var(--red-primary);
@@ -107,7 +99,7 @@ body {
     flex-direction: column;
 }
 
-/* --- CABECERA INTERNA --- */
+
 .changelog-header {
     display: flex;
     justify-content: space-between;
@@ -119,7 +111,7 @@ body {
 
 .title {
     font-family: var(--font-title);
-    font-size: 3.5rem; /* Título más grande */
+    font-size: 3.5rem; 
     margin: 0;
     color: var(--text-dark);
     letter-spacing: 1px;
@@ -132,12 +124,12 @@ body {
     align-items: center;
 }
 
-/* CAMBIO: Botones rectangulares y alargados */
+
 .btn-rojo {
     background-color: var(--red-primary);
     color: white;
     border: none;
-    /* Padding rectangular: menos arriba/abajo, más a los lados */
+    
     padding: 12px 35px; 
     font-size: 1rem;
     font-weight: bold;
@@ -146,7 +138,7 @@ body {
     text-decoration: none;
     box-shadow: 0 4px 0 #c0392b;
     transition: transform 0.1s, box-shadow 0.1s;
-    white-space: nowrap; /* Evita que el texto se rompa en dos líneas */
+    white-space: nowrap; 
 }
 
 .btn-rojo:active {
@@ -154,12 +146,12 @@ body {
     box-shadow: none;
 }
 
-/* --- LISTA DE MENSAJES --- */
+
 .message-list {
     display: flex;
     flex-direction: column;
     gap: 25px;
-    flex-grow: 1; /* Ocupa el espacio restante */
+    flex-grow: 1; 
     overflow-y: auto;
     padding-right: 15px;
 }
@@ -185,7 +177,7 @@ body {
 
 .text {
     margin: 0 0 8px 0;
-    font-size: 1.2rem; /* Texto un poco más grande */
+    font-size: 1.2rem; 
     line-height: 1.5;
     color: #444;
 }
@@ -209,26 +201,25 @@ body {
     margin-top: 50px;
     font-size: 1.2rem;
 }
-/* --- ESTILOS DEL POPUP INTERACTIVO --- */
 
-/* Fondo oscuro que cubre toda la pantalla */
+
 .modal-overlay {
-    display: none; /* Oculto por defecto */
+    display: none; 
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Negro semitransparente */
-    z-index: 1000; /* Para que esté encima de todo */
+    background-color: rgba(0, 0, 0, 0.6); 
+    z-index: 1000; 
     justify-content: center;
     align-items: center;
-    backdrop-filter: blur(5px); /* Efecto borroso bonito de fondo */
+    backdrop-filter: blur(5px); 
 }
 
-/* Ajustes para la tarjeta cuando está dentro del modal */
+
 .modal-overlay .popup-card {
-    /* Animación de entrada */
+    
     animation: slideUp 0.3s ease-out;
 }
 
@@ -237,19 +228,16 @@ body {
     to { transform: translateY(0); opacity: 1; }
 }
 
-/* Hacemos que los items de la lista parezcan clicables */
+
 .message-item {
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
 .message-item:hover {
-    background-color: #f0f0f0; /* Se ilumina un poco al pasar el ratón */
+    background-color: #f0f0f0; 
 }
 
-/* --- (Asegúrate de tener los estilos de .popup-card que te pasé antes) --- */
-/* Si borraste lo anterior, asegúrate de que .popup-card, .popup-header, etc. existen */
-/* Aquí te pongo lo básico por si acaso: */
 
 .popup-card {
     background: white;

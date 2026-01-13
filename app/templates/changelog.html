@@ -8,51 +8,48 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
-        /* --- ESTILOS DEL DESPLEGABLE (Igual que tu foto) --- */
         .dropdown-menu {
             display: none;
             position: absolute;
-            top: 110%; /* Un poco separado del icono */
-            right: 0; /* Alineado a la derecha */
+            top: 110%; 
+            right: 0; 
             background-color: white;
             min-width: 200px;
-            /* Sombra suave y bordes redondeados como en la foto */
             box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
             z-index: 9999;
-            border-radius: 15px; /* Bordes bien redondeados */
-            padding: 10px 0; /* Espacio interior */
-            border: none; /* Sin borde gris feo */
+            border-radius: 15px; 
+            padding: 10px 0; 
+            border: none; 
         }
         
         .dropdown-menu a {
-            color: #000 !important; /* Texto negro intenso */
+            color: #000 !important;
             padding: 12px 20px;
             text-decoration: none;
             display: block;
             text-align: left;
             font-size: 15px;
-            font-family: 'Roboto', sans-serif; /* Misma letra */
-            font-weight: 700; /* Un poco de negrita para que se lea bien */
+            font-family: 'Roboto', sans-serif; 
+            font-weight: 700; 
             transition: background 0.2s;
         }
         
         .dropdown-menu a:hover {
-            background-color: #f5f5f5; /* Gris muy clarito al pasar el ratón */
+            background-color: #f5f5f5; 
         }
         
         .show { display: block !important; }
         
-        /* --- CLASE PARA LA ANIMACIÓN AL PASAR EL RATÓN --- */
-        /* Esto hace que los botones se muevan igual que la flecha */
+        
         .efecto-hover {
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efecto rebote suave */
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             cursor: pointer;
         }
         .efecto-hover:hover {
-            transform: scale(1.1); /* Se hace un 10% más grande */
+            transform: scale(1.1); 
         }
 
-        /* Flecha Gigante (Mantenemos tu estilo) */
+        
         .flecha-grande {
             width: 80px !important; 
             height: auto;
