@@ -34,6 +34,7 @@
 
         <div class="pokedex-right-panel">
             {% for u in usuarios %}
+                <img src="{{ url_for('static', filename='sprites/pokemon_' ~ u['IDFavorito'] ~ '.png') }}" alt="Sprite">
                 <p>{{ u['Nombre'] }}</p>
                 <p>Pokemon Favorito: {{ u['IDFavorito'] }}</p>
                 <a href="/verde/{{u['IDUsuario']}}">

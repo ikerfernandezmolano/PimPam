@@ -13,34 +13,27 @@ class GestorEspecies:
         self.db = db
 
     def initialize(self, limit=10):
-        """
-        Carga inicial mínima desde PokéAPI SOLO si la tabla Especie está vacía.
-        Importante: NO inventamos evoluciones aquí (TieneEvolucion=0, Prevolucion=NULL),
-        porque si no la cadena evolutiva queda mal.
-        """
+        import os, requests
         res = self.db.select("SELECT COUNT(*) AS TOTAL FROM Especie")
-        if res and res[0]["TOTAL"] == 0:
+        # Carpeta pública
+        sprites_dir = "app/static/sprites"
+        os.makedirs(sprites_dir, exist_ok=True) 
+        
+        if res and res[0]["TOTAL"]==0:
             for i in range(1, limit):
                 p = pb.pokemon(i)
                 e = pb.pokemon_species(i)
-                self.db.insert(
-                    "INSERT INTO Especie VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-                    [
-                        p.id,
-                        p.name,
-                        e.is_legendary,
-                        e.generation.url.rstrip("/").split("/")[-1],
-                        p.sprites.front_default,
-                        "Prueba",
-                        "Prueba",
-                        p.height,
-                        p.weight,
-                        "Prueba",
-                        0,      # TieneEvolucion (mínimo seguro)
-                        None    # Prevolucion (mínimo seguro)
-                    ],
-                )
-        return self  # útil para llamadas tipo GestorEspecies(...).initialize()
+                self.db.insert("INSERT INTO Especie VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",[p.id,p.name,e.is_legendary, e.generation.url.rstrip('/').split('/')[-1],p.sprites.front_default,"Prueba","Prueba",p.height,p.weight,"Prueba",1,0])
+        
+                sprite_url = p.sprites.front_default
+                filepath = os.path.join(sprites_dir, f"pokemon_{p.id}.png")
+
+                # Descargar solo si no existe
+                if sprite_url and sprite_url.startswith("http") and not os.path.exists(filepath):
+                    response = requests.get(sprite_url)
+                    response.raise_for_status()
+                    with open(filepath, "wb") as f:
+                        f.write(response.content)
 
     def get_all(self):
         rows = self.db.select("SELECT * FROM Especie")

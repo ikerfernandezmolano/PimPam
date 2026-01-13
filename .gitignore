@@ -3,6 +3,8 @@
 .env
 venv/
 
+app/static/sprites/
+
 __pycache__/
 **/__pycache__/
 
