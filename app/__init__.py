@@ -47,13 +47,6 @@ def create_app():
     # Crear conexión a la base de datos
     db = SGBD()
 
-    @app.teardown_appcontext
-    def close_db(exception=None):
-        try:
-            db.close()
-        except Exception:
-            pass
-
     app.register_blueprint(equipos_blueprint(db))
     app.register_blueprint(pokemon_blueprint(db))
     app.register_blueprint(user_blueprint(db))
