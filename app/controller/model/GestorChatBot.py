@@ -17,9 +17,11 @@ class GestorChatBot:
     def procesarComando(self, pComando: str) -> str:
         comando = (pComando or "").strip()
 
+        # 1B: Mensaje vacío o espacios
         if not comando:
-            return "No se puede enviar un mensaje vacío."
+            return "No se puede enviar."
 
+        # 1E / 1F: Falta "/" al inicio
         if not comando.startswith("/"):
             return "Error de sintaxis. Falta el icono de inicio de comando '/'."
 
@@ -27,13 +29,21 @@ class GestorChatBot:
         cmd = partes[0]
         args = partes[1:]
 
+        # 1C: Solo "/"
         if cmd == "/":
-            return "Error de sintaxis. Falta el comando."
+            # Texto EXACTO del plan + extra (lista de comandos) para que quede más útil
+            comandos_disponibles = ", ".join(sorted(self.comandos.keys()))
+            return (
+                "Error de sintaxis. Falta el comando. Muestra los comandos posibles. "
+                f"Comandos: {comandos_disponibles}"
+            )
 
+        # 1D: Comando inexistente
         if cmd not in self.comandos:
             return "Error de sintaxis. Comando no encontrado."
 
         n_req = self.comandos[cmd]
+
         if len(args) < n_req:
             return "Error de sintaxis. Falta el argumento."
         if len(args) > n_req:
@@ -53,6 +63,7 @@ class GestorChatBot:
             return "Error interno."
         except Exception:
             return "Error interno. Inténtalo más tarde."
+
 
     # --------------------
     # Helpers
