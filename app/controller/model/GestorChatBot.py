@@ -6,12 +6,13 @@ class GestorChatBot:
         self.gestor_especies = gestor_especies
         self.gestor_equipos = gestor_equipos
 
+        # nº de argumentos requeridos por comando
         self.comandos = {
             "/stats": 1,
             "/weaknesses": 1,
             "/evolution": 1,
             "/score_team": 1,
-            "/compare": 2
+            "/compare": 2,
         }
 
     def procesarComando(self, pComando: str) -> str:
@@ -31,7 +32,6 @@ class GestorChatBot:
 
         # 1C: Solo "/"
         if cmd == "/":
-            # Texto EXACTO del plan + extra (lista de comandos) para que quede más útil
             comandos_disponibles = ", ".join(sorted(self.comandos.keys()))
             return (
                 "Error de sintaxis. Falta el comando. Muestra los comandos posibles. "
@@ -42,8 +42,22 @@ class GestorChatBot:
         if cmd not in self.comandos:
             return "Error de sintaxis. Comando no encontrado."
 
-        n_req = self.comandos[cmd]
+        # Gestión especial de /compare según el plan (6G y 6H)
+        if cmd == "/compare":
+            if len(args) == 0:
+                return "Error de sintaxis. Faltan los argumentos."
+            if len(args) == 1:
+                return "Error de sintaxis. Falta un argumento."
+            if len(args) > 2:
+                return "Error de sintaxis. Demasiados argumentos."
+            # 2 args exactos
+            try:
+                return self._cmd_compare(args[0], args[1])
+            except Exception:
+                return "Error interno. Inténtalo más tarde."
 
+        # Resto de comandos (todos con 1 argumento)
+        n_req = self.comandos[cmd]
         if len(args) < n_req:
             return "Error de sintaxis. Falta el argumento."
         if len(args) > n_req:
@@ -56,41 +70,39 @@ class GestorChatBot:
                 return self._cmd_weaknesses(args[0])
             if cmd == "/evolution":
                 return self._cmd_evolution(args[0])
-            if cmd == "/compare":
-                return self._cmd_compare(args[0], args[1])
             if cmd == "/score_team":
                 return self._cmd_score_team(args[0])
             return "Error interno."
         except Exception:
             return "Error interno. Inténtalo más tarde."
 
-
     # --------------------
     # Helpers
     # --------------------
 
     def _as_dict(self, row):
-        # sqlite3.Row soporta dict(row); si ya es dict, lo dejamos
         return row if isinstance(row, dict) else dict(row)
 
     def _total_stats(self, pk: dict) -> int:
-        return sum([
-            pk.get("PS") or 0,
-            pk.get("Ataque") or 0,
-            pk.get("Defensa") or 0,
-            pk.get("AtaqueEspecial") or 0,
-            pk.get("DefensaEspecial") or 0,
-            pk.get("Velocidad") or 0,
-        ])
+        return sum(
+            [
+                pk.get("PS") or 0,
+                pk.get("Ataque") or 0,
+                pk.get("Defensa") or 0,
+                pk.get("AtaqueEspecial") or 0,
+                pk.get("DefensaEspecial") or 0,
+                pk.get("Velocidad") or 0,
+            ]
+        )
 
     # --------------------
-    # Implementación real
+    # Implementación comandos
     # --------------------
 
     def _cmd_stats(self, nombre_pokemon: str) -> str:
         p = self.gestor_especies.getPokemonPorNombre(nombre_pokemon)
         if not p:
-            return "Pokémon no encontrado."
+            return "Pokemon no encontrado."
 
         return (
             f"{p.get('Nombre')} "
@@ -103,8 +115,12 @@ class GestorChatBot:
         a = self.gestor_especies.getPokemonPorNombre(p1)
         b = self.gestor_especies.getPokemonPorNombre(p2)
 
-        if not a or not b:
-            return "Pokémon no encontrado."
+        if not a and not b:
+            return "Pokémons no encontrados."
+        if not a:
+            return "Pokemon 1 no encontrado."
+        if not b:
+            return "Pokemon 2 no encontrado."
 
         ta = self._total_stats(a)
         tb = self._total_stats(b)
@@ -124,7 +140,7 @@ class GestorChatBot:
     def _cmd_weaknesses(self, especie: str) -> str:
         info = self.gestor_especies.getDebilidadesYFortalezasPorEspecie(especie)
         if info is None:
-            return "Pokémon no encontrado."
+            return "Pokemon no encontrado."
 
         tipos = info.get("tipos", [])
         deb = info.get("debilidades", [])
@@ -142,7 +158,7 @@ class GestorChatBot:
     def _cmd_evolution(self, especie: str) -> str:
         cadena = self.gestor_especies.getCadenaEvolutivaPorEspecie(especie)
         if cadena is None:
-            return "Pokémon no encontrado."
+            return "Pokemon no encontrado."
 
         if not cadena:
             return "No tiene cadena evolutiva."
@@ -152,7 +168,7 @@ class GestorChatBot:
     def _cmd_score_team(self, nombre_equipo: str) -> str:
         equipo = None
 
-        # 1) Flujo normal: equipos del usuario logueado
+        # 1) equipos del usuario logueado
         sesion = Sesion().getSession()
         id_usuario = None
         if sesion:
@@ -166,8 +182,8 @@ class GestorChatBot:
                     equipo = e
                     break
 
-        # 2) Fallback: buscar por nombre global (EquipoDemo seed)
-        if not equipo:
+        # 2) fallback: por nombre global (seed EquipoDemo)
+        if not equipo and hasattr(self.gestor_equipos, "getEquipoPorNombre"):
             equipo = self.gestor_equipos.getEquipoPorNombre(nombre_equipo)
 
         if not equipo:
