@@ -1,10 +1,17 @@
 from flask import Blueprint, render_template, redirect, url_for
+from app.controller.model.GestorUsuarios import GestorUsuarios
 
 def pokedex_blueprint(db):
     bp = Blueprint('pokedex', __name__)
+    service = GestorUsuarios(db)
 
     @bp.route('/pokedex')
     def index():
+        sesion = service.getSession()
+        if sesion:
+            session = sesion['Estado']
+        else:
+            session = 'Aceptado'
         # Datos para el panel IZQUIERDO (el destacado)
         pokemon_destacado = {
             "id": 658,
@@ -28,7 +35,7 @@ def pokedex_blueprint(db):
             {"id": 25, "nombre": "PIKACHU", "tipo1": "ELÉCTRICO", "tipo2": None, "imagen": "pikachu.png"},
         ]
 
-        return render_template('pokedex.html', destacado=pokemon_destacado, pokemons=lista_pokemon)
+        return render_template('pokedex.html', destacado=pokemon_destacado, pokemons=lista_pokemon, sesion=session)
     
     @bp.route("/logout")
     def logout():

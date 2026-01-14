@@ -5,7 +5,7 @@ class Sesion:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls._instance.usuario = None  # Aquí guardaremos la instancia de Usuario
+            cls._instance.usuario = Usuario(0,'','','','',0)  # Aquí guardaremos la instancia de Usuario
         return cls._instance
 
     def startSession(self, pIDUsuario, pNombre, pEmail, pContraseña, pAREA='Espera', pNombrePKFav="Bulbasaur"):

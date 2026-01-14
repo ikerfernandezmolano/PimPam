@@ -108,7 +108,7 @@ def modifyUser_blueprint(db):
             elif status == 3:
                 flash("COMPLETA TODOS LOS CAMPOS", "error")
             else:
-                flash(status,"error")
+                flash("CAMBIOS NO REALIZADOS CORRECTAMENTE", "error")
                 
         usuario_sesion = service.getSession() # puede ser None si nadie ha iniciado sesión
         lista_pokemons = service2.get_all()
@@ -121,22 +121,74 @@ def manageUsers_blueprint(db):
     bp = Blueprint('manageUsers', __name__)
     service = GestorUsuarios(db)
 
-    @bp.route('/manageUsers')
+    @bp.route('/manageUsers', methods=['GET', 'POST'])
     def manageUsers():
-        usuarios = service.get_all()
-        return render_template('manageUsers.html', usuarios=usuarios)
-        
-    @bp.route('/rojo/<int:user_id>')
-    def rojo(user_id):
-        service.borrarUsuario(user_id)
-        usuarios = service.get_all()
-        return render_template('manageUsers.html', usuarios=usuarios)
+        sesion = service.getSession()['Estado']
+        if sesion and sesion != 'Admin':
+            return "No tienes los permisos necesarios para utilizar esta interfaz", 400
+        else:
+            if request.method == 'POST':
+                user_id = int(request.form.get('user_id'))
+                accion = request.form.get('accion')
+
+                if accion == 'aceptar':
+                    service.aceptar(user_id)
+                elif accion == 'rechazar':
+                    service.rechazar(user_id)
+                elif accion == 'eliminar':
+                    service.eliminar(user_id) 
+
+                # Redirige a la misma página para recargar la lista
+                return redirect(url_for('manageUsers.manageUsers'))
+
+            # GET: mostramos usuarios
+            usuarios1 = service.get_aceptados()
+            usuarios2 = service.get_espera()
+            return render_template('manageUsers.html', usuarios1=usuarios1, usuarios2=usuarios2)
     return bp
     
-    @bp.route('/modifyUser<int:user_id>')
-    def lapiz(user_id):
-        usuarios = service.get_all()
-        return redirect(url_for('modifyUser.root'))
+def modifyUserAdmin_blueprint(db):
+    bp = Blueprint('modifyUserAdmin', __name__)
+    service = GestorUsuarios(db)
+    service2 = GestorEspecies(db)
+    
+    @bp.route('/modifyUserAdmin', methods=['GET', 'POST'])
+    def modifyUserAdmin():
+        sesion = service.getSession()['Estado']
+        if sesion and sesion != 'Admin':
+            return "No tienes los permisos necesarios para utilizar esta interfaz", 400
+        else:
+            # Coger el parámetro 'id' de la URL
+            user_id = request.args.get('id')  # Devuelve str o None si no existe
 
+            if user_id is None:
+                return "No se proporcionó ID de usuario", 400  # Código de error si falta
+
+            # Convertir a int si quieres usarlo como número
+            try:
+                user_id = int(user_id)
+                if request.method == 'POST':
+                    email = request.form.get('email')
+                    password = request.form.get('password', '').strip()
+                    pkFav = request.form.get('pokefav', '')
+                    
+                    status = service.modificarDatosAdmin(email,password,pkFav,user_id)
+                    if status == 0:
+                        flash("CAMBIOS REALIZADOS CORRECTAMENTE", "success")
+                    elif status == 1:
+                        flash("CORREO YA REGISTRADO", "error")
+                    elif status == 2:
+                        return "No tienes los permisos necesarios para utilizar esta interfaz", 400
+                    else:
+                        flash(status,"error")
+                
+            except ValueError:
+                return "ID de usuario inválido", 400
+
+            # Ahora puedes usar user_id para buscar el usuario en la base de datos
+            usuario = service.get_usuario(user_id)  # ejemplo de función de tu servicio
+            lista_pokemons = service2.get_all()
+            mensajes = get_flashed_messages(with_categories=True)
+            return render_template('modifyUserAdmin.html', usuario=usuario, lista_pokemons=lista_pokemons, mensajes=mensajes)
     
-    
+    return bp

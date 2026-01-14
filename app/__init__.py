@@ -56,6 +56,7 @@ def create_app():
     app.register_blueprint(home_blueprint())
     app.register_blueprint(signin_blueprint(db))
     app.register_blueprint(modifyUser_blueprint(db))
+    app.register_blueprint(modifyUserAdmin_blueprint(db))
     app.register_blueprint(manageUsers_blueprint(db))
     app.register_blueprint(db_blueprint(db))
     app.register_blueprint(register_blueprint(db))

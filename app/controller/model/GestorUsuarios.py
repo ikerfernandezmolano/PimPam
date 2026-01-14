@@ -124,3 +124,83 @@ class GestorUsuarios:
         )
 
         return [ dict(row) for row in rows ]
+        
+    def get_aceptados(self):
+        rows = self.db.select(
+            sentence="SELECT * FROM Usuario WHERE Estado = 'Aceptado'"
+        )
+
+        return [ dict(row) for row in rows ]
+        
+    def get_espera(self):
+        rows = self.db.select(
+            sentence="SELECT * FROM Usuario WHERE Estado = 'Espera' OR Estado = 'Rechazado'"
+        )
+
+        return [ dict(row) for row in rows ]
+        
+    def aceptar(self, user_id):
+        self.db.update(
+            sentence="UPDATE Usuario SET Estado = 'Aceptado' WHERE IDUsuario = ?",
+            parameters=[user_id]
+        )
+        
+    def rechazar(self, user_id):
+        self.db.update(
+            sentence="UPDATE Usuario SET Estado = 'Rechazado' WHERE IDUsuario = ?",
+            parameters=[user_id]
+        )
+    
+    def eliminar(self, user_id):
+        self.db.delete(
+            sentence="DELETE FROM Usuario WHERE IDUsuario = ?",
+            parameters=[user_id]
+        )
+        
+    def get_usuario(self, user_id):
+        rows = self.db.select(
+            sentence="SELECT * FROM Usuario WHERE IDUsuario = ?",
+            parameters=[user_id]
+        )
+        
+        return {
+            "IDUsuario": rows[0]["IDUsuario"],
+            "Nombre": rows[0]["Nombre"],
+            "Email": rows[0]["Email"],
+            "Contrasena": rows[0]["Contrasena"],
+            "Estado": rows[0]["Estado"],
+            "IDFavorito": rows[0]["IDFavorito"]
+        }
+        
+    def modificarDatosAdmin(self, email, password, pkFav=None, user_id=1):
+        sesion = Sesion().getSession()
+        usuario = self.get_usuario(user_id)
+        if sesion['Estado'] == 'Admin':
+            # --- FAVORITO ---
+            if not pkFav:
+                pkFav = usuario.IDFavorito
+            else:
+                pkFav = self.db.select(
+                    sentence = "SELECT PokedexID FROM Especie WHERE Nombre = ? LIMIT 1",
+                    parameters = [pkFav]
+                )[0]['PokedexID']
+            if not password:
+                password = usuario['Contrasena']
+                
+            # --- UPDATE ---
+            try:
+                self.db.update(
+                    sentence="UPDATE Usuario SET Email=?, Contrasena=?, IDFavorito=? WHERE IDUsuario=?",
+                    parameters=[email, password, pkFav, user_id]
+                )
+                return 0
+
+            except Exception as e:
+                if "Usuario.Email" in str(e):
+                    return 1  # email repetido
+                return str(e)
+        else:
+            return 2
+        
+        
+        
