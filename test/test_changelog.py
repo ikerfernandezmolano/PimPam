@@ -12,9 +12,14 @@ from app.config import Config
 TEST_DB = 'test_pimpam.db'
 
 class TestChangelog(unittest.TestCase):
+    """
+    Clase de pruebas unitarias para validar el módulo Changelog.
+    Utiliza una base de datos temporal que se reinicia en cada test.
+    """
 
     def setUp(self):
-        """Se ejecuta ANTES de cada prueba"""
+        """CONFIGURACIÓN INICIAL: Se ejecuta ANTES de cada prueba."""
+        # Limpieza de BD anterior si existe
         if os.path.exists(TEST_DB):
             try:
                 os.remove(TEST_DB)
@@ -25,16 +30,18 @@ class TestChangelog(unittest.TestCase):
                 except:
                     pass 
 
+        # Configuración de Flask para modo Testing
         Config.DB_PATH = TEST_DB
         self.app = create_app()
         self.app.config['TESTING'] = True
         self.app.config['WTF_CSRF_ENABLED'] = False
         self.client = self.app.test_client()
         
+        # Inicialización de datos semilla
         self._init_test_db()
 
     def tearDown(self):
-        """Se ejecuta DESPUÉS de cada prueba"""
+        """LIMPIEZA: Se ejecuta DESPUÉS de cada prueba para borrar la BD."""
         if os.path.exists(TEST_DB):
             try:
                 time.sleep(0.1)
@@ -43,6 +50,7 @@ class TestChangelog(unittest.TestCase):
                 pass 
 
     def _init_test_db(self):
+        """Helper para crear tablas e insertar datos de prueba."""
         conn = sqlite3.connect(TEST_DB)
         cursor = conn.cursor()
         
@@ -53,12 +61,11 @@ class TestChangelog(unittest.TestCase):
             except sqlite3.OperationalError:
                 pass 
 
-        # Insertamos datos de prueba
+        # Insertamos un usuario y un mensaje de prueba (Fixture)
         cursor.execute("INSERT OR IGNORE INTO Especie (PokedexID, Nombre, Generacion) VALUES (1, 'Bulbasaur', 1)")
         cursor.execute("INSERT OR IGNORE INTO Usuario (Nombre, Email, Contrasena, Estado, IDFavorito) VALUES (?, ?, ?, ?, ?)",
                        ('TestUser', 'test@test.com', '1234', 'Activo', 1))
         
-        cursor.execute("DELETE FROM Mensaje WHERE IDUsuario = (SELECT IDUsuario FROM Usuario WHERE Nombre='TestUser')")
         cursor.execute("""
             INSERT INTO Mensaje (IDUsuario, Texto, Fecha) 
             VALUES 
@@ -68,21 +75,19 @@ class TestChangelog(unittest.TestCase):
         conn.commit()
         conn.close()
 
+    # --- CASOS DE PRUEBA ---
 
-
-    # 1. PRUEBA DE LISTADO 
     def test_2A_listado_basico(self):
-        """Prueba que carga la lista con datos"""
+        """Verifica que la página carga y muestra los datos iniciales."""
         response = self.client.get('/changelog')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Pikachu', response.data)
 
-    # 2. PRUEBA DE FEED VACÍO 
     def test_2B_feed_vacio(self):
-        """Prueba que sale el mensaje correcto cuando no hay eventos"""
+        """Verifica el mensaje de 'No hay actividad' cuando la BD está vacía."""
         conn = sqlite3.connect(TEST_DB)
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM Mensaje")
+        cursor.execute("DELETE FROM Mensaje") # Borramos datos
         conn.commit()
         conn.close()
 
@@ -90,31 +95,26 @@ class TestChangelog(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'No hay actividad reciente', response.data)
 
-    # 3. PRUEBA DE BOTÓN VOLVER 
     def test_2C_boton_volver(self):
-        """Comprueba que existe un enlace o botón para volver atrás"""
+        """Verifica que existe el elemento de navegación para volver atrás."""
         response = self.client.get('/changelog')
         self.assertEqual(response.status_code, 200)
-        # Buscamos la imagen de la flecha 'return.png' que pusimos
         self.assertIn(b'return.png', response.data)
 
-    # 4. PRUEBA DE FILTRO BUSCAR POSITIVO 
     def test_4D_buscar_usuario_existente(self):
-        """Busca un usuario que sí existe"""
+        """Verifica el filtro de búsqueda con un usuario que SÍ existe."""
         response = self.client.post('/changelog', data={'busqueda': 'TestUser'})
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Pikachu', response.data)
 
-    # 5. PRUEBA DE FILTRO BUSCAR NEGATIVO 
     def test_4D_buscar_usuario_inexistente(self):
-        """Busca un usuario que NO existe"""
+        """Verifica el filtro de búsqueda con un usuario que NO existe."""
         response = self.client.post('/changelog', data={'busqueda': 'Gaspar'})
         self.assertEqual(response.status_code, 200)
         self.assertNotIn(b'Pikachu', response.data)
 
-    # 6. PRUEBA DE BOTÓN TODOS 
     def test_4A_boton_todos(self):
-        """Prueba que al volver a cargar la página sin búsqueda, sale todo"""
+        """Verifica que se puede resetear el filtro volviendo a cargar la vista general."""
         self.client.post('/changelog', data={'busqueda': 'Gaspar'})
         response = self.client.get('/changelog')
         self.assertEqual(response.status_code, 200)

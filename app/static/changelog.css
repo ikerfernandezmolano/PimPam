@@ -1,23 +1,33 @@
-
+/* =========================================
+   VARIABLES GLOBALES (:root)
+   ========================================= */
+/* Definimos colores y fuentes en variables para facilitar el mantenimiento 
+   y asegurar la coherencia visual en toda la página. */
 :root {
-    --red-primary: #e74c3c;
+    --red-primary: #e74c3c;  /* Rojo corporativo estilo Pokedex */
     --bg-color: #f8f9fa;
     --text-dark: #333;
-    --font-title: 'Anton', sans-serif;
+    --font-title: 'Anton', sans-serif; /* Fuente para títulos impactantes */
     --font-body: Arial, sans-serif;
 }
 
+/* =========================================
+   CONFIGURACIÓN DEL BODY
+   ========================================= */
 body {
+    /* Imagen de fondo fija que cubre toda la pantalla */
     background-image: url('fondoChangelog.png'); 
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
-    background-attachment: fixed;
+    background-attachment: fixed; /* Efecto Parallax: el fondo no se mueve al hacer scroll */
     background-color: var(--red-primary);
     
     font-family: var(--font-body);
     margin: 0;
     padding: 10px 20px 20px 20px; 
+    
+    /* Usamos Flexbox para centrar el contenido principal verticalmente */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -25,36 +35,42 @@ body {
     box-sizing: border-box; 
 }
 
-
+/* =========================================
+   BARRA DE NAVEGACIÓN SUPERIOR
+   ========================================= */
 .top-bar {
     width: 100%;
     max-width: 98%; 
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Separa los elementos a los extremos */
     align-items: flex-start; 
     padding: 5px 0; 
     margin-bottom: 15px;
 }
 
+/* Estilos para la flecha de volver atrás */
 .back-arrow img {
     width: 35px; 
     height: 35px;
-    opacity: 0.8;
+    opacity: 0.8; /* Transparencia inicial */
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.2s; /* Suaviza la animación de escala */
     margin-left: -5px; 
 }
 
+/* Efecto hover: agranda ligeramente la flecha */
 .back-arrow img:hover {
     transform: scale(1.1);
 }
 
+/* Contenedor de iconos del menú derecho */
 .menu-icons {
     display: flex;
-    gap: 30px;
+    gap: 30px; /* Espaciado entre iconos */
     margin-right: -5px;
 }
 
+/* Elementos individuales del menú */
 .menu-item {
     display: flex;
     flex-direction: column;
@@ -66,7 +82,7 @@ body {
 
 .menu-item:hover {
     opacity: 1;
-    transform: translateY(-2px);
+    transform: translateY(-2px); /* Pequeño salto hacia arriba */
 }
 
 .menu-item img {
@@ -74,39 +90,45 @@ body {
     height: 35px;
     object-fit: contain;
     margin-bottom: 5px;
-    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.2)); 
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.2)); /* Sombra suave para dar profundidad */
 }
 
 .menu-item span {
     font-size: 0.7rem;
     font-weight: bold;
     color: white; 
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5); 
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Mejora legibilidad sobre el fondo rojo */
 }
 
+/* =========================================
+   TARJETA PRINCIPAL (CONTENEDOR)
+   ========================================= */
 .card-container {
     background: white;
     width: 100%;
-    max-width: 96%; 
+    max-width: 96%; /* Diseño responsive: no ocupa todo el ancho en pantallas grandes */
     min-height: 75vh; 
     border-radius: 15px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25); /* Sombra difusa para efecto 'flotante' */
     padding: 50px; 
     box-sizing: border-box;
     position: relative;
-    border-top: 6px solid var(--red-primary);
+    border-top: 6px solid var(--red-primary); /* Detalle estético superior */
+    
     display: flex;
     flex-direction: column;
 }
 
-
+/* =========================================
+   CABECERA DEL CHANGELOG
+   ========================================= */
 .changelog-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 40px;
     padding-bottom: 25px;
-    border-bottom: 3px solid #f0f0f0;
+    border-bottom: 3px solid #f0f0f0; /* Línea separadora */
 }
 
 .title {
@@ -124,7 +146,7 @@ body {
     align-items: center;
 }
 
-
+/* Estilos de botones personalizados */
 .btn-rojo {
     background-color: var(--red-primary);
     color: white;
@@ -136,23 +158,28 @@ body {
     border-radius: 6px;
     cursor: pointer;
     text-decoration: none;
-    box-shadow: 0 4px 0 #c0392b;
+    
+    /* Sombra sólida inferior para efecto 3D */
+    box-shadow: 0 4px 0 #c0392b; 
     transition: transform 0.1s, box-shadow 0.1s;
     white-space: nowrap; 
 }
 
+/* Efecto de 'pulsar' el botón */
 .btn-rojo:active {
-    transform: translateY(3px);
-    box-shadow: none;
+    transform: translateY(3px); /* Se mueve hacia abajo */
+    box-shadow: none; /* Desaparece la sombra 3D */
 }
 
-
+/* =========================================
+   LISTA DE MENSAJES (SCROLLABLE)
+   ========================================= */
 .message-list {
     display: flex;
     flex-direction: column;
     gap: 25px;
-    flex-grow: 1; 
-    overflow-y: auto;
+    flex-grow: 1; /* Ocupa todo el espacio disponible restante */
+    overflow-y: auto; /* Habilita scroll vertical si hay muchos mensajes */
     padding-right: 15px;
 }
 
@@ -161,6 +188,12 @@ body {
     align-items: flex-start;
     padding-bottom: 20px;
     border-bottom: 1px dashed #e0e0e0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.message-item:hover {
+    background-color: #f0f0f0; /* Feedback visual al pasar el ratón */
 }
 
 .avatar img {
@@ -202,43 +235,25 @@ body {
     font-size: 1.2rem;
 }
 
-
+/* =========================================
+   VENTANA MODAL (POPUP)
+   ========================================= */
+/* Fondo oscuro semitransparente que cubre toda la pantalla */
 .modal-overlay {
-    display: none; 
+    display: none; /* Oculto por defecto, se activa con JS */
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.6); 
-    z-index: 1000; 
+    z-index: 1000; /* Asegura que esté por encima de todo */
     justify-content: center;
     align-items: center;
-    backdrop-filter: blur(5px); 
+    backdrop-filter: blur(5px); /* Efecto de desenfoque del fondo */
 }
 
-
-.modal-overlay .popup-card {
-    
-    animation: slideUp 0.3s ease-out;
-}
-
-@keyframes slideUp {
-    from { transform: translateY(50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-
-.message-item {
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.message-item:hover {
-    background-color: #f0f0f0; 
-}
-
-
+/* Tarjeta interna del popup */
 .popup-card {
     background: white;
     width: 90%;
@@ -251,6 +266,17 @@ body {
     flex-direction: column;
 }
 
+/* Animación de entrada para el modal */
+.modal-overlay .popup-card {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Elementos internos del popup */
 .popup-header {
     background: #f9f9f9;
     padding: 10px 15px;
@@ -267,6 +293,7 @@ body {
     position: absolute;
     top: 20px; right: 20px;
 }
+
 .popup-body { display: flex; align-items: center; margin-top: 40px; }
 .col-img { flex: 1; display: flex; justify-content: center; }
 .poke-big { width: 180px; height: auto; filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.2)); }
