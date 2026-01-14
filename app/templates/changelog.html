@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Changelog</title>
+    
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='changelog.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
-        /* Menú desplegable oculto por defecto */
+        /* --- ESTILOS ESPECÍFICOS PARA LA INTERFAZ --- */
+
+        /* Estilos del menú desplegable de usuario (oculto por defecto) */
         .dropdown-menu {
             display: none;
             position: absolute;
@@ -23,6 +26,7 @@
             border: none; 
         }
         
+        /* Estilos de los enlaces dentro del menú */
         .dropdown-menu a {
             color: #000 !important;
             padding: 12px 20px;
@@ -39,10 +43,10 @@
             background-color: #f5f5f5; 
         }
         
-        /* Clase utilitaria para mostrar elementos mediante JS */
+        /* Clase de utilidad para mostrar elementos vía JavaScript */
         .show { display: block !important; }
         
-        /* Animación suave al pasar el ratón */
+        /* Efectos de hover y transiciones para elementos interactivos */
         .efecto-hover {
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             cursor: pointer;
@@ -93,7 +97,11 @@
             
             <div class="dropdown-menu" id="userMenu">
                 <a href="/modifyUser">Modificar datos</a>
-                <a href="/manageUsers">Gestionar usuarios</a>
+
+                {% if es_admin %}
+                    <a href="/manageUsers">Gestionar usuarios</a>
+                {% endif %}
+                
                 <a href="/logout">Cerrar sesión</a>
             </div>
         </div>
@@ -137,6 +145,7 @@
 {% endwith %}
 
 <div class="card-container" style="position: relative; z-index: 1;">
+    
     <div class="changelog-header">
         <h1 class="title">CHANGELOG</h1>
         
@@ -217,12 +226,18 @@
 </div>
 
 <script>
+    /**
+     * Alterna la visibilidad del menú desplegable de usuario.
+     */
     function toggleDropdown(e) {
-        e.stopPropagation();
+        e.stopPropagation(); // Evita que el evento se propague al window
         var menu = document.getElementById("userMenu");
         menu.classList.toggle("show");
     }
 
+    /**
+     * Cierra el menú desplegable si se hace clic fuera de él.
+     */
     window.onclick = function(event) {
         if (!event.target.closest('.dropdown')) {
             var dropdowns = document.getElementsByClassName("dropdown-menu");
@@ -235,6 +250,9 @@
         }
     }
 
+    /**
+     * Muestra el campo de texto para realizar búsquedas y oculta el botón.
+     */
     function mostrarBuscador() {
         var input = document.getElementById('campoBusqueda');
         var btn = document.querySelector('.search-form button');
@@ -245,12 +263,18 @@
         }
     }
 
+    /**
+     * Detecta la pulsación de la tecla Enter para enviar el formulario.
+     */
     function comprobarEnter(e) {
         if (e.keyCode === 13) { 
             document.getElementById('formBusqueda').submit(); 
         }
     }
 
+    /**
+     * Abre el modal popup con la información detallada del mensaje seleccionado.
+     */
     function abrirPopup(usuario, fecha, texto, sprite) {
         document.getElementById('popupUser').innerText = '@' + usuario;
         document.getElementById('popupDate').innerText = fecha;
@@ -259,6 +283,9 @@
         document.getElementById('modalOverlay').style.display = 'flex';
     }
 
+    /**
+     * Cierra el modal popup ocultando el overlay.
+     */
     function cerrarPopup() {
         document.getElementById('modalOverlay').style.display = 'none';
     }
