@@ -191,9 +191,19 @@ a {
     text-decoration: none;
 }
 
-.usuario-actions button img,
-.usuario-actions a img {
+.usuario-nombre-linea {
+    display: flex;
+    align-items: center; /* centra verticalmente el icono con el texto */
+    gap: 6px;            /* espacio entre nombre y icono */
+}
+
+.icono {
+    width: 28px;          /* tamaño pequeño */
+    height: 28px;
+    opacity: 0.8;         /* opcional: que se vea suave */
+}
+
+.usuario-actions button img {
     width: 55px;   /* tamaño deseado */
     height: 55px;
 }
-

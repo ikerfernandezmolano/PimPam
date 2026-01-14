@@ -192,3 +192,30 @@ def modifyUserAdmin_blueprint(db):
             return render_template('modifyUserAdmin.html', usuario=usuario, lista_pokemons=lista_pokemons, mensajes=mensajes)
     
     return bp
+    
+def friends_blueprint(db):
+    bp = Blueprint('friends', __name__)
+    service = GestorUsuarios(db)
+
+    @bp.route('/friends', methods=['GET', 'POST'])
+    def friends():
+        sesion = service.getSession()
+        if request.method == 'POST':
+            user_id = request.form.get('user_id')
+            accion = request.form.get('accion')
+
+            if accion == 'dejarseguir':
+                service.dejarseguir(sesion['IDUsuario'],user_id)
+            elif accion == 'seguir':
+                service.seguir(sesion['IDUsuario'],user_id)
+
+            # Redirige a la misma página para recargar la lista
+            return redirect(url_for('friends.friends'))
+
+            # GET: mostramos usuarios
+        usuarios1 = service.get_amigos(sesion['IDUsuario'])
+        usuarios2 = service.get_solicitud(sesion['IDUsuario'])
+        usuarios3 = service.get_noamigos(sesion['IDUsuario'])
+        usuarios4 = service.get_esperandoamigo(sesion['IDUsuario'])
+        return render_template('friends.html', usuarios1=usuarios1, usuarios2=usuarios2, usuarios3=usuarios3, usuarios4=usuarios4)
+    return bp
