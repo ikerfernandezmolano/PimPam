@@ -84,7 +84,7 @@ class GestorUsuarios:
         
     def get_usuario(self, user_id):
         rows = self.db.execSQL(
-            sql="SELECT * FROM Usuario WHERE IDUsuario = ?",
+            sql="SELECT * FROM Usuario WHERE IDUsuario = ? LIMIT 1",
             parameters=[user_id]
         )
         

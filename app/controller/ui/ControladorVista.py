@@ -112,13 +112,13 @@ def amigos_blueprint(db):
         return render_template('amigos.html', usuarios1=usuarios1, usuarios2=usuarios2, usuarios3=usuarios3, usuarios4=usuarios4)
     return bp
     
-def modifyUser_blueprint(db):
+def modificarDatos_blueprint(db):
     bp = Blueprint('modifyUser', __name__)
     service = GestorUsuarios(db)
     service2 = GestorEspecies(db)
 
-    @bp.route('/modifyUser', methods=['GET', 'POST'])
-    def modifyUser():
+    @bp.route('/modificarDatos', methods=['GET', 'POST'])
+    def modificarDatos():
         if request.method == 'POST':
             email = request.form.get('email')
             password_old = request.form.get('password_old', '').strip()
@@ -140,47 +140,17 @@ def modifyUser_blueprint(db):
         usuario_sesion = service.getSession() # puede ser None si nadie ha iniciado sesión
         lista_pokemons = service2.get_all()
         mensajes = get_flashed_messages(with_categories=True)
-        return render_template('modifyUser.html', mensajes=mensajes, usuario_sesion=usuario_sesion, lista_pokemons=lista_pokemons)
+        return render_template('modificarDatos.html', mensajes=mensajes, usuario_sesion=usuario_sesion, lista_pokemons=lista_pokemons)
 
     return bp
     
-def manageUsers_blueprint(db):
-    bp = Blueprint('manageUsers', __name__)
-    service = GestorUsuarios(db)
-
-    @bp.route('/manageUsers', methods=['GET', 'POST'])
-    def manageUsers():
-        sesion = service.getSession()['Estado']
-        if sesion and sesion != 'Admin':
-            return "No tienes los permisos necesarios para utilizar esta interfaz", 400
-        else:
-            if request.method == 'POST':
-                user_id = int(request.form.get('user_id'))
-                accion = request.form.get('accion')
-
-                if accion == 'aceptar':
-                    service.aceptar(user_id)
-                elif accion == 'rechazar':
-                    service.rechazar(user_id)
-                elif accion == 'eliminar':
-                    service.eliminar(user_id) 
-
-                # Redirige a la misma página para recargar la lista
-                return redirect(url_for('manageUsers.manageUsers'))
-
-            # GET: mostramos usuarios
-            usuarios1 = service.get_aceptados()
-            usuarios2 = service.get_espera()
-            return render_template('manageUsers.html', usuarios1=usuarios1, usuarios2=usuarios2)
-    return bp
-    
-def modifyUserAdmin_blueprint(db):
+def modificarDatosAdmin_blueprint(db):
     bp = Blueprint('modifyUserAdmin', __name__)
     service = GestorUsuarios(db)
     service2 = GestorEspecies(db)
     
-    @bp.route('/modifyUserAdmin', methods=['GET', 'POST'])
-    def modifyUserAdmin():
+    @bp.route('/modificarDatosAdmin', methods=['GET', 'POST'])
+    def modificarDatosAdmin():
         sesion = service.getSession()['Estado']
         if sesion and sesion != 'Admin':
             return "No tienes los permisos necesarios para utilizar esta interfaz", 400
@@ -216,8 +186,40 @@ def modifyUserAdmin_blueprint(db):
             usuario = service.get_usuario(user_id)  # ejemplo de función de tu servicio
             lista_pokemons = service2.get_all()
             mensajes = get_flashed_messages(with_categories=True)
-            return render_template('modifyUserAdmin.html', usuario=usuario, lista_pokemons=lista_pokemons, mensajes=mensajes)
+            return render_template('modificarDatosAdmin.html', usuario=usuario, lista_pokemons=lista_pokemons, mensajes=mensajes)
     
     return bp
+    
+def gestionUsuarios_blueprint(db):
+    bp = Blueprint('gestionUsuarios', __name__)
+    service = GestorUsuarios(db)
+
+    @bp.route('/gestionUsuarios', methods=['GET', 'POST'])
+    def gestionUsuarios():
+        sesion = service.getSession()['Estado']
+        if sesion and sesion != 'Admin':
+            return "No tienes los permisos necesarios para utilizar esta interfaz", 400
+        else:
+            if request.method == 'POST':
+                user_id = int(request.form.get('user_id'))
+                accion = request.form.get('accion')
+
+                if accion == 'aceptar':
+                    service.aceptar(user_id)
+                elif accion == 'rechazar':
+                    service.rechazar(user_id)
+                elif accion == 'eliminar':
+                    service.eliminar(user_id) 
+
+                # Redirige a la misma página para recargar la lista
+                return redirect(url_for('gestionUsuarios.gestionUsuarios'))
+
+            # GET: mostramos usuarios
+            usuarios1 = service.get_aceptados()
+            usuarios2 = service.get_espera()
+            return render_template('gestionUsuarios.html', usuarios1=usuarios1, usuarios2=usuarios2)
+    return bp
+    
+
     
 

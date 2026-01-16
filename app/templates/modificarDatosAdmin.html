@@ -2,13 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Modificar Datos - PimPam</title>
+    <title>Modificar Datos Admin - PimPam</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='signin-reg.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
 </head>
 <body class="background">
-    <a href="/pokedex">
+    <a href="/gestionUsuarios">
       <img src="{{ url_for('static', filename='return.png') }}" class="flecha">
     </a>
     <div class="Cuerpo"> 
@@ -16,16 +16,15 @@
       {% for category, mensaje in mensajes %}
           <label class="message {{ category }}">{{ mensaje }}</label>
       {% endfor %}
-      <form action="/modifyUser" method="POST">
+      <form action="/modificarDatosAdmin?id={{ usuario.IDUsuario }}" method="POST">
           <div class="Cuerpo">
-              <input type="email" id="email" name="email" placeholder="CORREO ELECTRÓNICO" value="{{ usuario_sesion.Email }}" required>
-              <input type="password" id="password_old" name="password_old" placeholder="CONTRASEÑA ACTUAL">
-              <input type="password" id="password_new" name="password_new" placeholder="NUEVA CONTRASEÑA">
+              <input type="email" id="email" name="email" placeholder="CORREO ELECTRÓNICO" value="{{ usuario.Email }}" required>
+              <input type="password" id="password" name="password" placeholder="CONTRASEÑA NUEVA">
               
               <select id="pokefav" name="pokefav">
                   <option value="">ELEGIR POKEMON FAVORITO</option>
                   {% for pokemon in lista_pokemons %}
-                      <option value="{{ pokemon.Nombre }}" {% if usuario_sesion.Favorito == pokemon.Nombre %}selected{% endif %}>
+                      <option value="{{ pokemon.Nombre }}" {% if usuario.IDFavorito == pokemon.PokedexID %}selected{% endif %}>
                           {{ pokemon.Nombre }}
                       </option>
                   {% endfor %}

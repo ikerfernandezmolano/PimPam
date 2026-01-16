@@ -51,9 +51,9 @@ def create_app():
     app.register_blueprint(registro_blueprint(db))
     app.register_blueprint(inicioSesion_blueprint(db))
     app.register_blueprint(amigos_blueprint(db))
-    app.register_blueprint(modifyUser_blueprint(db))
-    app.register_blueprint(modifyUserAdmin_blueprint(db))
-    app.register_blueprint(manageUsers_blueprint(db))
+    app.register_blueprint(modificarDatos_blueprint(db))
+    app.register_blueprint(modificarDatosAdmin_blueprint(db))
+    app.register_blueprint(gestionUsuarios_blueprint(db))
     
     app.register_blueprint(equipos_blueprint(db))
     app.register_blueprint(pokemon_blueprint(db))
