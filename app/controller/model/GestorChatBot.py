@@ -2,11 +2,20 @@ from app.controller.model.Sesion import Sesion
 
 
 class GestorChatBot:
+    """
+    Gestor encargado de procesar los comandos introducidos en el ChatBot.
+    Valida la sintaxis, delega la lógica a los gestores de dominio y
+    genera la respuesta textual que se devuelve a la vista.
+    """
+
     def __init__(self, gestor_especies, gestor_equipos):
+        """
+        Inicializa el gestor con las dependencias necesarias.
+        """
         self.gestor_especies = gestor_especies
         self.gestor_equipos = gestor_equipos
 
-        # nº de argumentos requeridos por comando
+        # Número de argumentos requeridos por cada comando
         self.comandos = {
             "/stats": 1,
             "/weaknesses": 1,
@@ -16,13 +25,17 @@ class GestorChatBot:
         }
 
     def procesarComando(self, pComando: str) -> str:
+        """
+        Procesa el comando introducido por el usuario y devuelve
+        la respuesta correspondiente en formato texto.
+        """
         comando = (pComando or "").strip()
 
-        # 1B: Mensaje vacío o espacios
+        # 1B: Mensaje vacío o solo espacios
         if not comando:
             return "No se puede enviar."
 
-        # 1E / 1F: Falta "/" al inicio
+        # 1E / 1F: Falta el símbolo '/' al inicio
         if not comando.startswith("/"):
             return "Error de sintaxis. Falta el icono de inicio de comando '/'."
 
@@ -30,7 +43,7 @@ class GestorChatBot:
         cmd = partes[0]
         args = partes[1:]
 
-        # 1C: Solo "/"
+        # 1C: Comando incompleto (solo "/")
         if cmd == "/":
             comandos_disponibles = ", ".join(sorted(self.comandos.keys()))
             return (
@@ -42,7 +55,7 @@ class GestorChatBot:
         if cmd not in self.comandos:
             return "Error de sintaxis. Comando no encontrado."
 
-        # Gestión especial de /compare según el plan (6G y 6H)
+        # Gestión específica del comando /compare (casos 6G y 6H)
         if cmd == "/compare":
             if len(args) == 0:
                 return "Error de sintaxis. Faltan los argumentos."
@@ -50,19 +63,19 @@ class GestorChatBot:
                 return "Error de sintaxis. Falta un argumento."
             if len(args) > 2:
                 return "Error de sintaxis. Demasiados argumentos."
-            # 2 args exactos
             try:
                 return self._cmd_compare(args[0], args[1])
             except Exception:
                 return "Error interno. Inténtalo más tarde."
 
-        # Resto de comandos (todos con 1 argumento)
+        # Resto de comandos (todos requieren un único argumento)
         n_req = self.comandos[cmd]
         if len(args) < n_req:
             return "Error de sintaxis. Falta el argumento."
         if len(args) > n_req:
             return "Error de sintaxis. Demasiados argumentos."
 
+        # Delegación al método correspondiente
         try:
             if cmd == "/stats":
                 return self._cmd_stats(args[0])
@@ -76,14 +89,20 @@ class GestorChatBot:
         except Exception:
             return "Error interno. Inténtalo más tarde."
 
-    # --------------------
-    # Helpers
-    # --------------------
+    # --------------------------------------------------
+    # Métodos auxiliares
+    # --------------------------------------------------
 
     def _as_dict(self, row):
+        """
+        Garantiza que una fila devuelta por la BD se trate como diccionario.
+        """
         return row if isinstance(row, dict) else dict(row)
 
     def _total_stats(self, pk: dict) -> int:
+        """
+        Calcula la suma total de estadísticas de un Pokémon.
+        """
         return sum(
             [
                 pk.get("PS") or 0,
@@ -95,11 +114,14 @@ class GestorChatBot:
             ]
         )
 
-    # --------------------
-    # Implementación comandos
-    # --------------------
+    # --------------------------------------------------
+    # Implementación de comandos
+    # --------------------------------------------------
 
     def _cmd_stats(self, nombre_pokemon: str) -> str:
+        """
+        Devuelve las estadísticas de un Pokémon.
+        """
         p = self.gestor_especies.getPokemonPorNombre(nombre_pokemon)
         if not p:
             return "Pokemon no encontrado."
@@ -112,6 +134,9 @@ class GestorChatBot:
         )
 
     def _cmd_compare(self, p1: str, p2: str) -> str:
+        """
+        Compara dos Pokémon en base a la suma de sus estadísticas.
+        """
         a = self.gestor_especies.getPokemonPorNombre(p1)
         b = self.gestor_especies.getPokemonPorNombre(p2)
 
@@ -138,6 +163,9 @@ class GestorChatBot:
         )
 
     def _cmd_weaknesses(self, especie: str) -> str:
+        """
+        Muestra debilidades y fortalezas de una especie.
+        """
         info = self.gestor_especies.getDebilidadesYFortalezasPorEspecie(especie)
         if info is None:
             return "Pokemon no encontrado."
@@ -156,19 +184,24 @@ class GestorChatBot:
         )
 
     def _cmd_evolution(self, especie: str) -> str:
+        """
+        Devuelve la cadena evolutiva de una especie.
+        """
         cadena = self.gestor_especies.getCadenaEvolutivaPorEspecie(especie)
         if cadena is None:
             return "Pokemon no encontrado."
-
         if not cadena:
             return "No tiene cadena evolutiva."
 
         return "Cadena evolutiva: " + " -> ".join(cadena)
 
     def _cmd_score_team(self, nombre_equipo: str) -> str:
+        """
+        Calcula la puntuación total y media de un equipo Pokémon.
+        """
         equipo = None
 
-        # 1) equipos del usuario logueado
+        # 1) Equipos del usuario logueado
         sesion = Sesion().getSession()
         id_usuario = None
         if sesion:
@@ -182,7 +215,7 @@ class GestorChatBot:
                     equipo = e
                     break
 
-        # 2) fallback: por nombre global (seed EquipoDemo)
+        # 2) Fallback: equipo global (seed)
         if not equipo and hasattr(self.gestor_equipos, "getEquipoPorNombre"):
             equipo = self.gestor_equipos.getEquipoPorNombre(nombre_equipo)
 

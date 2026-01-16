@@ -51,7 +51,7 @@ class GestorEspecies:
     def getEspeciePorNombre(self, pNombre: str):
         rows = self.db.execSQL(
             sql="SELECT * FROM Especie WHERE LOWER(Nombre) = LOWER(?) LIMIT 1",
-            parameters=[nombre],
+            parameters=[pNombre],
         )
         return dict(rows[0]) if rows else None
 
