@@ -30,11 +30,11 @@ def db_blueprint(db):
 
     return bp
 
-def register_blueprint(db):
-    bp = Blueprint('register', __name__)
+def registro_blueprint(db):
+    bp = Blueprint('registro', __name__)
     service = GestorUsuarios(db)
 
-    @bp.route('/register', methods=['GET', 'POST'])
+    @bp.route('/registro', methods=['GET', 'POST'])
     def register():
         if request.method == 'POST':
             user = request.form.get('user')
@@ -55,16 +55,16 @@ def register_blueprint(db):
                 elif status == 3:
                     flash("ERROR DESCONOCIDO INTÉNTALO MÁS TARDE", "error")
         mensajes = get_flashed_messages(with_categories=True)
-        return render_template('register.html', mensajes=mensajes)
+        return render_template('registro.html', mensajes=mensajes)
 
     return bp
 
-def signin_blueprint(db):
-    bp = Blueprint('signin', __name__)
+def inicioSesion_blueprint(db):
+    bp = Blueprint('inicioSesion', __name__)
     service = GestorUsuarios(db)
 
-    @bp.route('/signin', methods=['GET', 'POST'])
-    def signin():
+    @bp.route('/inicioSesion', methods=['GET', 'POST'])
+    def iniciarSesion():
         if request.method == 'POST':
             email = request.form.get('email')
             password = request.form.get('password', '').strip()
@@ -81,8 +81,35 @@ def signin_blueprint(db):
                 flash("ERROR DESCONOCIDO, INTÉNTALO MÁS TARDE", "error")
 
         mensajes = get_flashed_messages(with_categories=True)
-        return render_template('signin.html', mensajes=mensajes)
+        return render_template('inicioSesion.html', mensajes=mensajes)
 
+    return bp
+    
+def amigos_blueprint(db):
+    bp = Blueprint('amigos', __name__)
+    service = GestorUsuarios(db)
+
+    @bp.route('/amigos', methods=['GET', 'POST'])
+    def amigos():
+        sesion = service.getSession()
+        if request.method == 'POST':
+            user_id = request.form.get('user_id')
+            accion = request.form.get('accion')
+
+            if accion == 'dejarseguir':
+                service.dejarseguir(sesion['IDUsuario'],user_id)
+            elif accion == 'seguir':
+                service.seguir(sesion['IDUsuario'],user_id)
+
+            # Redirige a la misma página para recargar la lista
+            return redirect(url_for('amigos.amigos'))
+
+            # GET: mostramos usuarios
+        usuarios1 = service.get_amigos(sesion['IDUsuario'])
+        usuarios2 = service.get_solicitud(sesion['IDUsuario'])
+        usuarios3 = service.get_noamigos(sesion['IDUsuario'])
+        usuarios4 = service.get_esperandoamigo(sesion['IDUsuario'])
+        return render_template('amigos.html', usuarios1=usuarios1, usuarios2=usuarios2, usuarios3=usuarios3, usuarios4=usuarios4)
     return bp
     
 def modifyUser_blueprint(db):
@@ -193,29 +220,4 @@ def modifyUserAdmin_blueprint(db):
     
     return bp
     
-def friends_blueprint(db):
-    bp = Blueprint('friends', __name__)
-    service = GestorUsuarios(db)
 
-    @bp.route('/friends', methods=['GET', 'POST'])
-    def friends():
-        sesion = service.getSession()
-        if request.method == 'POST':
-            user_id = request.form.get('user_id')
-            accion = request.form.get('accion')
-
-            if accion == 'dejarseguir':
-                service.dejarseguir(sesion['IDUsuario'],user_id)
-            elif accion == 'seguir':
-                service.seguir(sesion['IDUsuario'],user_id)
-
-            # Redirige a la misma página para recargar la lista
-            return redirect(url_for('friends.friends'))
-
-            # GET: mostramos usuarios
-        usuarios1 = service.get_amigos(sesion['IDUsuario'])
-        usuarios2 = service.get_solicitud(sesion['IDUsuario'])
-        usuarios3 = service.get_noamigos(sesion['IDUsuario'])
-        usuarios4 = service.get_esperandoamigo(sesion['IDUsuario'])
-        return render_template('friends.html', usuarios1=usuarios1, usuarios2=usuarios2, usuarios3=usuarios3, usuarios4=usuarios4)
-    return bp

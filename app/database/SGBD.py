@@ -12,7 +12,25 @@ class SGBD:
         )
         self.connection.row_factory = sqlite3.Row
         self.__initialized = True
-
+        
+    def executeSQL(self, sql, parameters=None):
+        cursor = self.connection.cursor()
+        if parameters:
+            cursor.execute(sql, parameters)
+        else:
+            cursor.execute(sql)
+        self.connection.commit()
+        cursor.close()
+    
+    def execSQL(self, sql, parameters=None):
+        cursor = self.connection.cursor()
+        if parameters:
+            cursor.execute(sql, parameters)
+        else:
+            cursor.execute(sql)
+        rows = cursor.fetchall()
+        cursor.close()
+        return rows
 
     def select(self, sentence, parameters=None):
         cursor = self.connection.cursor()

@@ -1,11 +1,11 @@
 class Usuario:
-    def __init__(self, IDUsuario, Nombre, Email, Contrasena, Estado='Espera', Favorito="Bulbasaur"):
-        self.IDUsuario = IDUsuario
-        self.Nombre = Nombre
-        self.Email = Email
-        self.Contrasena = Contrasena
-        self.Estado = Estado
-        self.Favorito = Favorito
+    def __init__(self, pIDUsuario, pNombre, pEmail, pContrasena, pEstado='Espera', pFavorito="Bulbasaur"):
+        self.IDUsuario = pIDUsuario
+        self.Nombre = pNombre
+        self.Email = pEmail
+        self.Contrasena = pContrasena
+        self.Estado = pEstado
+        self.Favorito = pFavorito
         
     def getData(self):
         return {

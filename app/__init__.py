@@ -12,7 +12,6 @@ from app.controller.ui.pokedex_controller import pokedex_blueprint
 from app.database.SGBD import SGBD
 from app.config import Config
 from app.controller.ui.ControladorVista import *
-from app.controller.ui.user_controlller import user_blueprint
 from app.controller.ui.changelog_controller import changelog_blueprint
 from app.controller.ui.chatbot_controller import chatbot_blueprint
 
@@ -47,18 +46,23 @@ def create_app():
     # Crear conexión a la base de datos
     db = SGBD()
 
+    # Funcionalidades Iker
+    app.register_blueprint(home_blueprint())
+    app.register_blueprint(registro_blueprint(db))
+    app.register_blueprint(inicioSesion_blueprint(db))
+    app.register_blueprint(amigos_blueprint(db))
+    app.register_blueprint(modifyUser_blueprint(db))
+    app.register_blueprint(modifyUserAdmin_blueprint(db))
+    app.register_blueprint(manageUsers_blueprint(db))
+    
     app.register_blueprint(equipos_blueprint(db))
     app.register_blueprint(pokemon_blueprint(db))
     app.register_blueprint(changelog_blueprint(db))
     app.register_blueprint(pokedex_blueprint(db))
     app.register_blueprint(chatbot_blueprint(db))
-    app.register_blueprint(home_blueprint())
-    app.register_blueprint(signin_blueprint(db))
-    app.register_blueprint(modifyUser_blueprint(db))
-    app.register_blueprint(modifyUserAdmin_blueprint(db))
-    app.register_blueprint(manageUsers_blueprint(db))
-    app.register_blueprint(friends_blueprint(db))
+    
+    # Monitorización
     app.register_blueprint(db_blueprint(db))
-    app.register_blueprint(register_blueprint(db))
+
 
     return app

@@ -14,7 +14,7 @@ class GestorEspecies:
 
     def initialize(self, limit=10):
         import os, requests
-        res = self.db.select("SELECT COUNT(*) AS TOTAL FROM Especie")
+        res = self.db.execSQL("SELECT COUNT(*) AS TOTAL FROM Especie")
         # Carpeta pública
         sprites_dir = "app/static/sprites"
         os.makedirs(sprites_dir, exist_ok=True) 
@@ -23,7 +23,7 @@ class GestorEspecies:
             for i in range(1, limit):
                 p = pb.pokemon(i)
                 e = pb.pokemon_species(i)
-                self.db.insert("INSERT INTO Especie VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",[p.id,p.name,e.is_legendary, e.generation.url.rstrip('/').split('/')[-1],p.sprites.front_default,"Prueba","Prueba",p.height,p.weight,"Prueba",1,0])
+                self.db.executeSQL("INSERT INTO Especie VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",[p.id,p.name,e.is_legendary, e.generation.url.rstrip('/').split('/')[-1],p.sprites.front_default,"Prueba","Prueba",p.height,p.weight,"Prueba",1,0])
         
                 sprite_url = p.sprites.front_default
                 filepath = os.path.join(sprites_dir, f"pokemon_{p.id}.png")
@@ -36,35 +36,29 @@ class GestorEspecies:
                         f.write(response.content)
 
     def get_all(self):
-        rows = self.db.select("SELECT * FROM Especie")
+        rows = self.db.execSQL("SELECT * FROM Especie")
         return [dict(row) for row in rows]
 
-    def getPokemonPorNombre(self, nombre: str):
-        rows = self.db.select(
-            "SELECT * FROM Pokemon WHERE LOWER(Nombre) = LOWER(?) LIMIT 1",
-            [nombre],
+    def getPokemonPorNombre(self, pNombre: str):
+        rows = self.db.execSQL(
+            sql="SELECT * FROM Pokemon WHERE LOWER(Nombre) = LOWER(?) LIMIT 1",
+            parameters=[pNombre],
         )
         if not rows:
             return None
         return dict(rows[0])
 
-    def getEspeciePorNombre(self, nombre: str):
-        rows = self.db.select(
-            "SELECT * FROM Especie WHERE LOWER(Nombre) = LOWER(?) LIMIT 1",
-            [nombre],
+    def getEspeciePorNombre(self, pNombre: str):
+        rows = self.db.execSQL(
+            sql="SELECT * FROM Especie WHERE LOWER(Nombre) = LOWER(?) LIMIT 1",
+            parameters=[nombre],
         )
         return dict(rows[0]) if rows else None
 
-    def getTiposPorNombreEspecie(self, nombre_especie: str):
-        rows = self.db.select(
-            """
-            SELECT t.Nombre AS Tipo
-            FROM Especie e
-            JOIN REspecieTipo ret ON ret.PokedexID = e.PokedexID
-            JOIN Tipo t ON t.Nombre = ret.NombreTipo
-            WHERE LOWER(e.Nombre) = LOWER(?)
-            """,
-            [nombre_especie],
+    def getTiposPorNombreEspecie(self, pNombreEspecie: str):
+        rows = self.db.execSQL(
+            sql="SELECT t.Nombre AS Tipo FROM Especie e JOIN REspecieTipo ret ON ret.PokedexID = e.PokedexID JOIN Tipo t ON t.Nombre = ret.NombreTipo WHERE LOWER(e.Nombre) = LOWER(?)",
+            parameters=[pNombreEspecie],
         )
         return [r["Tipo"] for r in rows] if rows else []
 
@@ -79,14 +73,14 @@ class GestorEspecies:
         fuertes = set()
 
         for t in tipos:
-            rows = self.db.select(
+            rows = self.db.execSQL(
                 "SELECT NombreTipoFuerte AS T FROM Debil WHERE NombreTipoDebil = ?",
                 [t],
             )
             for r in rows:
                 debiles.add(r["T"])
 
-            rows = self.db.select(
+            rows = self.db.execSQL(
                 "SELECT NombreTipoDebil AS T FROM Debil WHERE NombreTipoFuerte = ?",
                 [t],
             )
@@ -120,7 +114,7 @@ class GestorEspecies:
             visitados.add(actual)
             ids.append(actual)
 
-            prev = self.db.select(
+            prev = self.db.execSQL(
                 "SELECT Prevolucion FROM Especie WHERE PokedexID = ? LIMIT 1",
                 [actual],
             )
@@ -140,7 +134,7 @@ class GestorEspecies:
         visitados = set(ids)
 
         while True:
-            nxt = self.db.select(
+            nxt = self.db.execSQL(
                 "SELECT PokedexID FROM Especie WHERE Prevolucion = ? LIMIT 1",
                 [actual],
             )
@@ -156,7 +150,7 @@ class GestorEspecies:
         # ids -> nombres
         nombres = []
         for pid in ids:
-            r = self.db.select(
+            r = self.db.execSQL(
                 "SELECT Nombre FROM Especie WHERE PokedexID = ? LIMIT 1",
                 [pid],
             )

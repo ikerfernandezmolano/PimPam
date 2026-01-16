@@ -11,12 +11,12 @@ class Sesion:
     def startSession(self, pIDUsuario, pNombre, pEmail, pContraseña, pAREA='Espera', pNombrePKFav="Bulbasaur"):
         """Crea la instancia de Usuario y la guarda en la sesión"""
         self.usuario = Usuario(
-            IDUsuario=pIDUsuario,
-            Nombre=pNombre,
-            Email=pEmail,
-            Contrasena=pContraseña,
-            Estado=pAREA,
-            Favorito=pNombrePKFav
+            pIDUsuario=pIDUsuario,
+            pNombre=pNombre,
+            pEmail=pEmail,
+            pContrasena=pContraseña,
+            pEstado=pAREA,
+            pFavorito=pNombrePKFav
         )
 
     def cerrarSesion(self):

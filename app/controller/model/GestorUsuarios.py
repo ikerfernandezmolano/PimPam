@@ -7,11 +7,11 @@ class GestorUsuarios:
         
 #-----------------------AÑADIR/ELIMINAR USUARIO-----------------------------#
 
-    def añadirUsuario(self, user, email, passwd):
+    def añadirUsuario(self, pUser, pEmail, pPasswd):
         try:
-            self.db.insert(
-                sentence="INSERT INTO Usuario (Nombre, Email, Contrasena,Estado) VALUES (?,?,?,?)",
-                parameters=[user.strip(),email.strip(),passwd.strip(),"Espera"]
+            self.db.executeSQL(
+                sql="INSERT INTO Usuario (Nombre, Email, Contrasena,Estado) VALUES (?,?,?,?)",
+                parameters=[pUser.strip(),pEmail.strip(),pPasswd.strip(),"Espera"]
             )
             return 0
         except Exception as e:
@@ -25,16 +25,16 @@ class GestorUsuarios:
                 return 3  # otro error de integridad
                 
     def borrarUsuario(self, idUser):
-        self.db.delete(sentence="DELETE FROM Usuarios WHERE IDUsuario=?",
+        self.db.executeSQL(sql="DELETE FROM Usuarios WHERE IDUsuario=?",
         parameters=[idUser]
         )
                 
 #-----------------------------INICIAR SESIÓN----------------------------------#
         
-    def iniciarSesion(self, email, passwd):
-        rows = self.db.select(
-            sentence="SELECT * FROM Usuario WHERE Email=? LIMIT 1",
-            parameters=[email.strip()]
+    def iniciarSesion(self, pEmail, pPasswd):
+        rows = self.db.execSQL(
+            sql="SELECT * FROM Usuario WHERE Email=? LIMIT 1",
+            parameters=[pEmail.strip()]
         )
 
         if not rows:
@@ -43,7 +43,7 @@ class GestorUsuarios:
 
         usuario = rows[0]  # tomamos la primera fila
 
-        if passwd.strip() != usuario['Contrasena']:
+        if pPasswd.strip() != usuario['Contrasena']:
             # Contraseña incorrecta
             return 2
             
@@ -54,8 +54,8 @@ class GestorUsuarios:
         ge = GestorEspecies(self.db).initialize()
 
         # Contraseña correcta
-        nombre = self.db.select(
-            sentence="SELECT Nombre FROM Especie WHERE PokedexID=? LIMIT 1",
+        nombre = self.db.execSQL(
+            sql="SELECT Nombre FROM Especie WHERE PokedexID=? LIMIT 1",
             parameters=[usuario['IDFavorito']]
         )
         
@@ -73,8 +73,8 @@ class GestorUsuarios:
 #-----------------------------GETTERS INFO----------------------------------#
      
     def get_all(self):
-        rows = self.db.select(
-            sentence="SELECT * FROM Usuario"
+        rows = self.db.execSQL(
+            sql="SELECT * FROM Usuario"
         )
 
         return [ dict(row) for row in rows ]
@@ -83,8 +83,8 @@ class GestorUsuarios:
         return Sesion().getSession()
         
     def get_usuario(self, user_id):
-        rows = self.db.select(
-            sentence="SELECT * FROM Usuario WHERE IDUsuario = ?",
+        rows = self.db.execSQL(
+            sql="SELECT * FROM Usuario WHERE IDUsuario = ?",
             parameters=[user_id]
         )
         
@@ -100,8 +100,8 @@ class GestorUsuarios:
 #------------------------------GETTERS INFO-----------------------------------#
 
     def get_amigos(self, user_id):
-        rows = self.db.select(
-            sentence = "SELECT s1.IDUsuarioSeguido FROM SEGUIDOR AS s1 INNER JOIN SEGUIDOR AS s2 ON s1.IDUsuarioSeguido = s2.IDUsuarioSeguidor WHERE s1.IDUsuarioSeguidor=? AND s2.IDUsuarioSeguido=?",
+        rows = self.db.execSQL(
+            sql = "SELECT s1.IDUsuarioSeguido FROM SEGUIDOR AS s1 INNER JOIN SEGUIDOR AS s2 ON s1.IDUsuarioSeguido = s2.IDUsuarioSeguidor WHERE s1.IDUsuarioSeguidor=? AND s2.IDUsuarioSeguido=?",
             parameters = [user_id,user_id]
         )
         resultado = []
@@ -111,24 +111,24 @@ class GestorUsuarios:
         return resultado
         
     def get_noamigos(self, user_id):
-        rows = self.db.select(
-            sentence = "SELECT u.IDUsuario, u.Nombre, u.Email, u.Estado, u.IDFavorito FROM Usuario u WHERE u.IDUsuario <> ? AND NOT EXISTS (SELECT 1 FROM SEGUIDOR s WHERE s.IDUsuarioSeguidor = ? AND s.IDUsuarioSeguido = u.IDUsuario) AND NOT EXISTS (SELECT 1 FROM SEGUIDOR s WHERE s.IDUsuarioSeguidor = u.IDUsuario AND s.IDUsuarioSeguido = ?)",
+        rows = self.db.execSQL(
+            sql = "SELECT u.IDUsuario, u.Nombre, u.Email, u.Estado, u.IDFavorito FROM Usuario u WHERE u.IDUsuario <> ? AND NOT EXISTS (SELECT 1 FROM SEGUIDOR s WHERE s.IDUsuarioSeguidor = ? AND s.IDUsuarioSeguido = u.IDUsuario) AND NOT EXISTS (SELECT 1 FROM SEGUIDOR s WHERE s.IDUsuarioSeguidor = u.IDUsuario AND s.IDUsuarioSeguido = ?)",
             parameters = [user_id,user_id,user_id]
         )
 
         return [ dict(row) for row in rows ]
         
     def get_solicitud(self, user_id):
-        rows = self.db.select(
-            sentence="SELECT u.IDUsuario, u.Nombre, u.Email, u.Estado, u.IDFavorito FROM Usuario u INNER JOIN SEGUIDOR s1 ON s1.IDUsuarioSeguido = u.IDUsuario WHERE s1.IDUsuarioSeguidor = ? AND NOT EXISTS (SELECT 1 FROM SEGUIDOR s2 WHERE s2.IDUsuarioSeguidor = u.IDUsuario AND s2.IDUsuarioSeguido = ?)",
+        rows = self.db.execSQL(
+            sql="SELECT u.IDUsuario, u.Nombre, u.Email, u.Estado, u.IDFavorito FROM Usuario u INNER JOIN SEGUIDOR s1 ON s1.IDUsuarioSeguido = u.IDUsuario WHERE s1.IDUsuarioSeguidor = ? AND NOT EXISTS (SELECT 1 FROM SEGUIDOR s2 WHERE s2.IDUsuarioSeguidor = u.IDUsuario AND s2.IDUsuarioSeguido = ?)",
             parameters=[user_id, user_id]
         )
 
         return [dict(row) for row in rows]
         
     def get_esperandoamigo(self, user_id):
-        rows = self.db.select(
-            sentence="SELECT u.IDUsuario, u.Nombre, u.Email, u.Estado, u.IDFavorito FROM Usuario u INNER JOIN SEGUIDOR s1 ON s1.IDUsuarioSeguidor = u.IDUsuario WHERE s1.IDUsuarioSeguido = ? AND NOT EXISTS (SELECT 1 FROM SEGUIDOR s2 WHERE s2.IDUsuarioSeguidor = ? AND s2.IDUsuarioSeguido = u.IDUsuario)",
+        rows = self.db.execSQL(
+            sql="SELECT u.IDUsuario, u.Nombre, u.Email, u.Estado, u.IDFavorito FROM Usuario u INNER JOIN SEGUIDOR s1 ON s1.IDUsuarioSeguidor = u.IDUsuario WHERE s1.IDUsuarioSeguido = ? AND NOT EXISTS (SELECT 1 FROM SEGUIDOR s2 WHERE s2.IDUsuarioSeguidor = ? AND s2.IDUsuarioSeguido = u.IDUsuario)",
             parameters=[user_id, user_id]
         )
 
@@ -137,14 +137,14 @@ class GestorUsuarios:
 #-----------------------------GESTIÓN AMIGOS----------------------------------#
 
     def dejarseguir(self, ses_id, user_id):
-        self.db.delete(
-            sentence = "DELETE FROM SEGUIDOR WHERE IDUsuarioSeguidor=? AND IDUsuarioSeguido=?",
+        self.db.executeSQL(
+            sql = "DELETE FROM SEGUIDOR WHERE IDUsuarioSeguidor=? AND IDUsuarioSeguido=?",
             parameters=[ses_id,user_id]
         )
     
     def seguir(self, ses_id, user_id):
-        self.db.insert(
-            sentence = "INSERT INTO SEGUIDOR VALUES(?,?)",
+        self.db.executeSQL(
+            sql = "INSERT INTO SEGUIDOR VALUES(?,?)",
             parameters = [user_id,ses_id]
         )
         
@@ -152,15 +152,15 @@ class GestorUsuarios:
 #-----------------------------GETTERS MANAGE----------------------------------#
         
     def get_aceptados(self):
-        rows = self.db.select(
-            sentence="SELECT * FROM Usuario WHERE Estado = 'Aceptado'"
+        rows = self.db.execSQL(
+            sql="SELECT * FROM Usuario WHERE Estado = 'Aceptado'"
         )
 
         return [ dict(row) for row in rows ]
         
     def get_espera(self):
-        rows = self.db.select(
-            sentence="SELECT * FROM Usuario WHERE Estado = 'Espera' OR Estado = 'Rechazado'"
+        rows = self.db.execSQL(
+            sql="SELECT * FROM Usuario WHERE Estado = 'Espera' OR Estado = 'Rechazado'"
         )
 
         return [ dict(row) for row in rows ]
@@ -168,20 +168,20 @@ class GestorUsuarios:
 #-----------------------------BOTONES MANAGE----------------------------------#
         
     def aceptar(self, user_id):
-        self.db.update(
-            sentence="UPDATE Usuario SET Estado = 'Aceptado' WHERE IDUsuario = ?",
+        self.db.executeSQL(
+            sql="UPDATE Usuario SET Estado = 'Aceptado' WHERE IDUsuario = ?",
             parameters=[user_id]
         )
         
     def rechazar(self, user_id):
-        self.db.update(
-            sentence="UPDATE Usuario SET Estado = 'Rechazado' WHERE IDUsuario = ?",
+        self.db.executeSQL(
+            sql="UPDATE Usuario SET Estado = 'Rechazado' WHERE IDUsuario = ?",
             parameters=[user_id]
         )
     
     def eliminar(self, user_id):
-        self.db.delete(
-            sentence="DELETE FROM Usuario WHERE IDUsuario = ?",
+        self.db.executeSQL(
+            sql="DELETE FROM Usuario WHERE IDUsuario = ?",
             parameters=[user_id]
         )
         
@@ -193,14 +193,14 @@ class GestorUsuarios:
         # --- FAVORITO ---
         if not pkFav:
             pkFavSes = sesion['Favorito']
-            pkFav = self.db.select(
-                sentence="SELECT PokedexID FROM Especie WHERE Nombre=? LIMIT 1",
+            pkFav = self.db.execSQL(
+                sql="SELECT PokedexID FROM Especie WHERE Nombre=? LIMIT 1",
                 parameters=[pkFavSes]
             )[0]['PokedexID']
         else:
             pkFavSes=pkFav
-            pkFav = self.db.select(
-                sentence="SELECT PokedexID FROM Especie WHERE Nombre=? LIMIT 1",
+            pkFav = self.db.execSQL(
+                sql="SELECT PokedexID FROM Especie WHERE Nombre=? LIMIT 1",
                 parameters=[pkFav]
             )[0]['PokedexID']
 
@@ -217,8 +217,8 @@ class GestorUsuarios:
         
         # --- UPDATE ---
         try:
-            self.db.update(
-                sentence="UPDATE Usuario SET Email=?, Contrasena=?, IDFavorito=? WHERE IDUsuario=?",
+            self.db.executeSQL(
+                sql="UPDATE Usuario SET Email=?, Contrasena=?, IDFavorito=? WHERE IDUsuario=?",
                 parameters=[email, password_new, pkFav, sesion['IDUsuario']]
             )
 
@@ -245,8 +245,8 @@ class GestorUsuarios:
             if not pkFav:
                 pkFav = usuario.IDFavorito
             else:
-                pkFav = self.db.select(
-                    sentence = "SELECT PokedexID FROM Especie WHERE Nombre = ? LIMIT 1",
+                pkFav = self.db.execSQL(
+                    sql = "SELECT PokedexID FROM Especie WHERE Nombre = ? LIMIT 1",
                     parameters = [pkFav]
                 )[0]['PokedexID']
             if not password:
@@ -254,8 +254,8 @@ class GestorUsuarios:
                 
             # --- UPDATE ---
             try:
-                self.db.update(
-                    sentence="UPDATE Usuario SET Email=?, Contrasena=?, IDFavorito=? WHERE IDUsuario=?",
+                self.db.executeSQL(
+                    sql="UPDATE Usuario SET Email=?, Contrasena=?, IDFavorito=? WHERE IDUsuario=?",
                     parameters=[email, password, pkFav, user_id]
                 )
                 return 0
