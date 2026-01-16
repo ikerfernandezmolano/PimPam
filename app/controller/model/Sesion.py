@@ -1,15 +1,17 @@
 from app.controller.model.Usuario import Usuario  # importa tu clase Usuario
+
 class Sesion:
     _instance = None
 
     def __new__(cls):
+        # Implementa el patrón singleton para la sesión
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls._instance.usuario = Usuario(0,'','','','',0)  # Aquí guardaremos la instancia de Usuario
+            cls._instance.usuario = Usuario(0,'','','','',0)  # Inicializa un usuario vacío
         return cls._instance
 
     def startSession(self, pIDUsuario, pNombre, pEmail, pContraseña, pAREA='Espera', pNombrePKFav="Bulbasaur"):
-        """Crea la instancia de Usuario y la guarda en la sesión"""
+        # Inicia sesión creando un usuario con los datos proporcionados
         self.usuario = Usuario(
             pIDUsuario=pIDUsuario,
             pNombre=pNombre,
@@ -20,15 +22,13 @@ class Sesion:
         )
 
     def cerrarSesion(self):
-        """Cerrar sesión"""
+        # Cierra la sesión eliminando el usuario
         self.usuario = None
     
     def getSession(self):
+        # Devuelve los datos del usuario en sesión
         return self.usuario.getData()
         
     def editSession(self, pEmail, pContraseña, pNombrePKFav, pEstado):
+        # Edita los datos del usuario en sesión
         self.usuario.editUser(pEmail, pContraseña, pNombrePKFav, pEstado)
-
-    def esta_logueado(self):
-        return self.usuario is not None
-

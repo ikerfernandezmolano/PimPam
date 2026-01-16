@@ -13,6 +13,7 @@ class GestorEspecies:
         self.db = db
 
     def initialize(self, limit=10):
+        # Carga en la base de datos los pokemons de la API
         import os, requests
         res = self.db.execSQL("SELECT COUNT(*) AS TOTAL FROM Especie")
         # Carpeta pública
@@ -36,6 +37,7 @@ class GestorEspecies:
                         f.write(response.content)
 
     def get_all(self):
+        # Devuelve una lista con todos los pokemons y sus atributos
         rows = self.db.execSQL("SELECT * FROM Especie")
         return [dict(row) for row in rows]
 
