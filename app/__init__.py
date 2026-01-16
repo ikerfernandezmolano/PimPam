@@ -49,7 +49,6 @@ def create_app():
 
     app.register_blueprint(equipos_blueprint(db))
     app.register_blueprint(pokemon_blueprint(db))
-    app.register_blueprint(user_blueprint(db))
     app.register_blueprint(changelog_blueprint(db))
     app.register_blueprint(pokedex_blueprint(db))
     app.register_blueprint(chatbot_blueprint(db))
